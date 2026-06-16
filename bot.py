@@ -1,16 +1,52 @@
 ﻿import asyncio
+import json
+from datetime import date
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
-from aiogram.filters import CommandStart
+from aiogram.filters import CommandStart, Command
 
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
+ADMIN_ID = os.getenv("ADMIN_ID")
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
+
+STATS_FILE = "stats.json"
+
+def load_stats():
+    if not os.path.exists(STATS_FILE):
+        return {"users": {}, "button_counts": {}, "total_actions": 0}
+    with open(STATS_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def save_stats(stats):
+    with open(STATS_FILE, "w", encoding="utf-8") as f:
+        json.dump(stats, f, ensure_ascii=False, indent=2)
+
+def track_stats(message: Message):
+    stats = load_stats()
+    user_id = str(message.from_user.id)
+    today = date.today().isoformat()
+
+    if user_id not in stats["users"]:
+        stats["users"][user_id] = {"first_seen": today}
+
+    stats["total_actions"] = stats.get("total_actions", 0) + 1
+
+    text = message.text
+    if text and not text.startswith("/"):
+        stats["button_counts"][text] = stats["button_counts"].get(text, 0) + 1
+
+    save_stats(stats)
+
+@dp.message.middleware()
+async def stats_middleware(handler, message: Message, data: dict):
+    track_stats(message)
+    return await handler(message, data)
 
 async def send_material(message: Message, file_id: str):
     await message.answer_document(file_id)
@@ -204,6 +240,36 @@ async def nuska(message: Message):
         "9️⃣ https://www.youtube.com/live/fCnZPZ1Rw7w\n\n"
         "🔟 https://www.youtube.com/live/W5PhjoWd77c\n\n"
         "1️⃣1️⃣ https://www.youtube.com/live/dpzWNqCqL8k"
+    )
+
+@dp.message(Command("id"))
+async def cmd_id(message: Message):
+    await message.answer(f"Сіздің Telegram ID: {message.from_user.id}")
+
+@dp.message(Command("admin"))
+async def cmd_admin(message: Message):
+    if not ADMIN_ID or str(message.from_user.id) != str(ADMIN_ID):
+        return
+
+    stats = load_stats()
+    today = date.today().isoformat()
+
+    total_users = len(stats["users"])
+    new_today = sum(1 for u in stats["users"].values() if u.get("first_seen") == today)
+    total_actions = stats.get("total_actions", 0)
+
+    top_buttons = sorted(stats["button_counts"].items(), key=lambda x: x[1], reverse=True)[:5]
+    if top_buttons:
+        top_text = "\n".join(f"{i+1}. {text} — {count}" for i, (text, count) in enumerate(top_buttons))
+    else:
+        top_text = "Деректер жоқ"
+
+    await message.answer(
+        "📊 Статистика\n\n"
+        f"👥 Пайдаланушылар саны: {total_users}\n"
+        f"🆕 Бүгін жаңа: {new_today}\n"
+        f"⚡ Жалпы әрекеттер: {total_actions}\n\n"
+        f"🏆 Топ-5 батырма:\n{top_text}"
     )
 
 @dp.message()
