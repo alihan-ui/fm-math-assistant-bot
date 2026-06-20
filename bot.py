@@ -35,7 +35,16 @@ def load_materials():
                 "math": {
                     "name": "📐 Математика",
                     "emoji": "📐",
-                    "materials": {}
+                    "materials": {
+                        "formulas": {"name": "📖 Формула жинақтары", "file_id": None},
+                        "nuska": {"name": "📝 Нұсқа талдаулар", "file_id": None},
+                        "prof": {"name": "🎯 Мамандықтар тізімі", "file_id": None},
+                        "checklists": {"name": "✅ Чек-листтер", "file_id": None},
+                        "streams": {"name": "🎥 12 сағаттық эфирлер", "file_id": None},
+                        "books": {"name": "📚 Есеп жинақтары", "file_id": None},
+                        "guides": {"name": "📘 Гайдтар", "file_id": None},
+                        "specs": {"name": "📄 Спецификациялар", "file_id": None},
+                    }
                 },
                 "informatics": {
                     "name": "💻 Информатика",
@@ -116,9 +125,6 @@ def get_main_menu():
     # Кнопка профориентации
     buttons.append([KeyboardButton(text=materials["proforientation"]["name"])])
     
-    # Админ кнопка (если это админ)
-    buttons.append([KeyboardButton(text="⚙️ Админ панель")])
-    
     return ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
  
 def get_subject_menu(subject_key):
@@ -133,23 +139,23 @@ def get_subject_menu(subject_key):
     
     # Материалы предмета
     for mat_key, mat_data in subject["materials"].items():
-        buttons.append([KeyboardButton(text=f"📄 {mat_data['name']}")])
+        buttons.append([KeyboardButton(text=f"{mat_data['name']}")])
     
     if not subject["materials"]:
-        buttons.append([KeyboardButton(text="⏳ Материалы скоро добавляются")])
+        buttons.append([KeyboardButton(text="⏳ Жақында қосылады!")])
     
     # Кнопка назад
-    buttons.append([KeyboardButton(text="◀️ Назад в меню")])
+    buttons.append([KeyboardButton(text="◀️ Артқа")])
     
     return ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
  
 def get_admin_menu():
     """Админ меню"""
     buttons = [
-        [KeyboardButton(text="➕ Добавить материал")],
-        [KeyboardButton(text="📋 Просмотр материалов")],
+        [KeyboardButton(text="➕ Материал қосу")],
+        [KeyboardButton(text="📋 Материалдарды көру")],
         [KeyboardButton(text="📊 Статистика")],
-        [KeyboardButton(text="◀️ Назад")],
+        [KeyboardButton(text="◀️ Артқа")],
     ]
     return ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
  
@@ -159,7 +165,7 @@ def get_admin_menu():
 async def cmd_start(message: types.Message):
     """Команда /start"""
     user_id = message.from_user.id
-    first_name = message.from_user.first_name or "User"
+    first_name = message.from_user.first_name or "Қолданушы"
     
     track(user_id, first_name)
     
@@ -175,7 +181,7 @@ async def cmd_start(message: types.Message):
 async def cmd_id(message: types.Message):
     """Команда /id - показать ID пользователя"""
     user_id = message.from_user.id
-    first_name = message.from_user.first_name or "User"
+    first_name = message.from_user.first_name or "Қолданушы"
     
     track(user_id, first_name, "/id")
     
@@ -183,7 +189,7 @@ async def cmd_id(message: types.Message):
  
 @dp.message(Command("admin"))
 async def cmd_admin(message: types.Message):
-    """Команда /admin - админ панель"""
+    """Команда /admin - админ панель (только для админа)"""
     if message.from_user.id != ADMIN_ID:
         return
     
@@ -214,17 +220,12 @@ async def cmd_admin(message: types.Message):
 async def handle_text(message: types.Message, state: FSMContext):
     """Обработка всех текстовых сообщений"""
     user_id = message.from_user.id
-    first_name = message.from_user.first_name or "User"
+    first_name = message.from_user.first_name or "Қолданушы"
     text = message.text.strip()
     
     # Проверка административных команд
     if user_id == ADMIN_ID:
-        if text == "⚙️ Админ панель":
-            track(user_id, first_name, "admin_panel")
-            await message.answer("Админ панель открыта", reply_markup=get_admin_menu())
-            return
-        
-        if text == "➕ Добавить материал":
+        if text == "➕ Материал қосу":
             track(user_id, first_name, "add_material")
             materials = load_materials()
             
@@ -234,22 +235,22 @@ async def handle_text(message: types.Message, state: FSMContext):
                 buttons.append([KeyboardButton(text=subject_data["name"])])
             
             keyboard = ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
-            await message.answer("Выбери предмет для добавления материала:", reply_markup=keyboard)
+            await message.answer("Предметті таңдаңыз:", reply_markup=keyboard)
             await state.set_state(AdminStates.waiting_for_subject_name)
             return
         
-        if text == "📋 Просмотр материалов":
+        if text == "📋 Материалдарды көру":
             track(user_id, first_name, "view_materials")
             materials = load_materials()
             
-            text_out = "📚 Все материалы:\n\n"
+            text_out = "📚 Барлық материалдар:\n\n"
             for subject_key, subject_data in materials["subjects"].items():
                 text_out += f"{subject_data['name']}:\n"
                 if subject_data["materials"]:
                     for mat_key, mat_data in subject_data["materials"].items():
-                        text_out += f"  • {mat_data['name']} (ID: {mat_key})\n"
+                        text_out += f"  • {mat_data['name']}\n"
                 else:
-                    text_out += "  (пусто)\n"
+                    text_out += "  (бос)\n"
                 text_out += "\n"
             
             await message.answer(text_out, reply_markup=get_admin_menu())
@@ -259,7 +260,7 @@ async def handle_text(message: types.Message, state: FSMContext):
             await cmd_admin(message)
             return
         
-        if text == "◀️ Назад":
+        if text == "◀️ Артқа":
             await cmd_start(message)
             await state.clear()
             return
@@ -275,11 +276,11 @@ async def handle_text(message: types.Message, state: FSMContext):
                 break
         
         if not subject_key:
-            await message.answer("❌ Предмет не найден")
+            await message.answer("❌ Предмет табылмады")
             return
         
         await state.update_data(subject_key=subject_key)
-        await message.answer("Теперь отправь материал (PDF, видео, документ и т.д.)")
+        await message.answer("Енді материалды жіберіңіз (PDF, видео, құжат және т.б.)")
         await state.set_state(AdminStates.waiting_for_material_file)
         return
     
@@ -293,7 +294,7 @@ async def handle_text(message: types.Message, state: FSMContext):
             
             if subject_menu:
                 await message.answer(
-                    f"Добро пожаловать в {subject_data['name']}!",
+                    f"{subject_data['name']} ішіне қош келдіңіз!",
                     reply_markup=subject_menu
                 )
             return
@@ -303,13 +304,13 @@ async def handle_text(message: types.Message, state: FSMContext):
         track(user_id, first_name, "proforientation")
         await message.answer(
             "🎯 Профориентация\n\n"
-            "Этот раздел скоро будет дополнен чек-листами, гайдами и информацией о поступлении.",
+            "Бұл бөлім жақында өндіктерлі болады.",
             reply_markup=get_main_menu()
         )
         return
     
     # Назад в меню
-    if text == "◀️ Назад в меню":
+    if text == "◀️ Артқа":
         await cmd_start(message)
         return
     
@@ -326,7 +327,7 @@ async def handle_material_file(message: types.Message, state: FSMContext):
     
     # Проверить что это файл
     if not message.document and not message.video and not message.audio and not message.photo:
-        await message.answer("❌ Пожалуйста отправь файл (PDF, видео, фото и т.д.)")
+        await message.answer("❌ Файлды жіберіңіз (PDF, видео, фото және т.б.)")
         return
     
     # Получить file_id
@@ -347,7 +348,7 @@ async def handle_material_file(message: types.Message, state: FSMContext):
         file_type = "photo"
     
     await state.update_data(file_id=file_id, file_type=file_type)
-    await message.answer("Как назвать этот материал? (например: 'Лекция 1 - Алгебра')")
+    await message.answer("Бұл материалға қалай есім бермек керек? (мысалы: 'Лекция 1 - Алгебра')")
     await state.set_state(AdminStates.waiting_for_material_name)
  
 @dp.message(AdminStates.waiting_for_material_name)
@@ -378,11 +379,11 @@ async def handle_material_name(message: types.Message, state: FSMContext):
     save_materials(materials)
     
     await message.answer(
-        f"✅ Материал добавлен!\n\n"
+        f"✅ Материал қосылды!\n\n"
         f"Предмет: {materials['subjects'][subject_key]['name']}\n"
-        f"Имя: {material_name}\n"
+        f"Есімі: {material_name}\n"
         f"File ID: `{file_id}`\n"
-        f"Тип: {file_type}",
+        f"Түрі: {file_type}",
         parse_mode="Markdown",
         reply_markup=get_admin_menu()
     )
