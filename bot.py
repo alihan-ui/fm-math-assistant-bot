@@ -263,7 +263,7 @@ async def admin_choose_root(message: Message, state: FSMContext):
         await message.answer("❌ Раздел табылмады")
         return
 
-    await state.update_data(current_path=[selected_key])
+await state.update_data(current_path=["subjects", selected_key])
     await show_folder_contents(message, state, [selected_key])
 
 async def show_folder_contents(message: Message, state: FSMContext, path: list):
