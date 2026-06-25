@@ -1,0 +1,253 @@
+{
+  "subjects": {
+    "math": {
+      "label": "📐 Математика",
+      "sections": {
+        "formulas": {
+          "label": "📖 Формула жинақтары",
+          "type": "list",
+          "items": [
+            {
+              "label": "FM толық формула жинағы",
+              "file_id": "BQACAgIAAxkBAAMhaivum6YUu_w_GDko4M6PzVnr3XoAAlqXAAKtAmBJEyCe1dt5fMw8BA"
+            },
+            {
+              "label": "Геометрия формулалары",
+              "file_id": "BQACAgIAAxkBAAMvaivxMhJUprEoBPd54ZBRfF7X8AwAAoGXAAKtAmBJvfap8uuCIYQ8BA"
+            }
+          ]
+        },
+        "streams": {
+          "label": "🎥 Эфирлер",
+          "type": "list",
+          "items": [
+            {
+              "label": "Нұсқа талдаулар",
+              "type": "links",
+              "title": "📝 Нұсқа талдаулар (Математика)",
+              "links": [
+                "https://www.youtube.com/live/X8E_LKEvCQQ",
+                "https://www.youtube.com/live/Hr_Lcc8SDrA",
+                "https://www.youtube.com/live/qszjXWW-kzg",
+                "https://www.youtube.com/live/RBI30Sl7znE",
+                "https://www.youtube.com/live/dT0Zusf1q58",
+                "https://www.youtube.com/live/GToZYK7EGqQ",
+                "https://youtu.be/J4u4xVYWTKk",
+                "https://www.youtube.com/live/WX3s4lVT_Do",
+                "https://www.youtube.com/live/fCnZPZ1Rw7w",
+                "https://www.youtube.com/live/W5PhjoWd77c",
+                "https://www.youtube.com/live/dpzWNqCqL8k"
+              ]
+            },
+            {
+              "label": "12 сағаттық эфирлер",
+              "type": "links",
+              "title": "🎥 12 сағаттық эфирлер (Математика)",
+              "links": [
+                "https://www.youtube.com/live/5ZJyxKkKKM0",
+                "https://www.youtube.com/live/8g4nBZuqSyg",
+                "https://www.youtube.com/live/LQI2qCXN2R4",
+                "https://www.youtube.com/live/4JrjVvrqA6Y",
+                "https://www.youtube.com/live/v4ViVRkwfPM",
+                "https://www.youtube.com/live/Py9KJ88uvQs",
+                "https://www.youtube.com/live/AEaxkQJ9C_E",
+                "https://www.youtube.com/live/7iWfTWMcnZY",
+                "https://www.youtube.com/live/W2vAd0WphBo",
+                "https://www.youtube.com/live/D4R6tUm40LU"
+              ]
+            }
+          ]
+        },
+        "checklists": {
+          "label": "✅ Чек-листтер",
+          "type": "list",
+          "items": [
+            {
+              "label": "Стереометрия",
+              "file_id": "BQACAgIAAxkBAAMjaivvStywIWtpCrX8CryUl21GEm4AAmKXAAKtAmBJv_VbrGFO3wc8BA"
+            },
+            {
+              "label": "Интеграл",
+              "file_id": "BQACAgIAAxkBAAMlaivvSsteogbS9PB8AV3ri5lZ3_EAAmSXAAKtAmBJPUKf_9C7dq48BA"
+            },
+            {
+              "label": "Модуль және теңсіздіктер",
+              "file_id": "BQACAgIAAxkBAAMkaivvSnxVWJTw6jgVTwqr3IyO-JkAAmOXAAKtAmBJY5WEFvycxQk8BA"
+            },
+            {
+              "label": "Пайыз табу",
+              "file_id": "BQACAgIAAxkBAAMoaivvSrXOH3jC9Iq8G6nH5ebHIgwAAmeXAAKtAmBJj6kUMP0sMnM8BA"
+            },
+            {
+              "label": "Дәреже және оның қасиеттері",
+              "file_id": "BQACAgIAAxkBAAMnaivvSiQX3MDb-hqJxnXOz0BUp5gAAmaXAAKtAmBJzqPQ-65iL208BA"
+            },
+            {
+              "label": "ЕКОЕ және ЕҮОБ",
+              "file_id": "BQACAgIAAxkBAAMmaivvSn3f2_ErLq0ZvVNhBn08KowAAmWXAAKtAmBJocCXGDW3aBU8BA"
+            }
+          ]
+        },
+        "books": {
+          "label": "📚 Есеп жинақтары",
+          "type": "list",
+          "items": [
+            {
+              "label": "Рустюмова",
+              "file_id": "BQACAgIAAxkBAAMXaivt37EPRojRpgWbd18HL_j-zUIAAkWXAAKtAmBJMP0iSpLBcbw8BA"
+            },
+            {
+              "label": "Қызыл кітап 1",
+              "file_id": "BQACAgIAAxkBAAMZaivt6tI4aqmns5UeHSMS9xTEo0oAAkuXAAKtAmBJgeZL3K2UUS48BA"
+            },
+            {
+              "label": "Scanavi Қазақша",
+              "file_id": "BQACAgIAAxkBAAMbaivt8TFdKhylKTTQA10nIvwTCEgAAkyXAAKtAmBJw3REgOJlUTU8BA"
+            },
+            {
+              "label": "Skanavi gruppa V yechimlari",
+              "file_id": "BQACAgIAAxkBAAMdaivt8aqFJN82IQ21j7nAUNoZMT8AAk6XAAKtAmBJjMD6It2TnVw8BA"
+            },
+            {
+              "label": "Skanavi Gruppa A yechimlari",
+              "file_id": "BQACAgIAAxkBAAMzaivyMoFWUYDCat3bxIbg3qrHjXQAApuXAAKtAmBJk6ScWJxHWlY8BA"
+            }
+          ]
+        },
+        "specs": {
+          "label": "📄 Спецификациялар",
+          "type": "single",
+          "file_id": "BQACAgIAAxkBAAMNaivoYkVdTqn3-P_QtMVa_X52eNQAAvGWAAKtAmBJ1jlXPyhYHjU8BA"
+        }
+      }
+    },
+    "informatics": {
+      "label": "💻 Информатика",
+      "sections": {
+        "streams": {
+          "label": "🎥 Эфирлер",
+          "type": "list",
+          "items": [
+            {
+              "label": "Тақырыптық талдаулар",
+              "type": "links",
+              "title": "🎥 Тақырыптық талдаулар (Информатика)",
+              "links": [
+                "https://www.youtube.com/live/wHGtPQI7uO4?si=VS2cNtrDhxDGAvyu",
+                "https://www.youtube.com/live/4X3qeVjdZo4?si=w8gbf8iOFk5yjDVs",
+                "https://www.youtube.com/live/yIWe32DF2Fw?si=jIyH-ANQLAvT1CmF",
+                "https://www.youtube.com/live/w7RNWSTLzlg?si=LWerSVKGuDT8L_Sw",
+                "https://www.youtube.com/live/TdtVoi4D7tA?si=zfOOndihhjwowYHe",
+                "https://www.youtube.com/live/sWqgV1lj3so?si=ydRyeeocHArqfsdB"
+              ]
+            }
+          ]
+        },
+        "tasks": {
+          "label": "📝 Тапсырмалар",
+          "type": "group",
+          "subsections": {
+            "topical_tasks": {
+              "label": "Тақырыптық тапсырмалар",
+              "type": "coming_soon"
+            },
+            "versions": {
+              "label": "Нұсқалар",
+              "type": "list",
+              "items": [
+                {
+                  "label": "1️⃣ Информатика 1-нұсқа",
+                  "file_id": "BQACAgIAAxkBAAJH82o3wHGcNpH2i2k_W0byeijrrsToAAItnQACdm_BSd4Qku2ir1arPAQ"
+                },
+                {
+                  "label": "2️⃣ Информатика 2-нұсқа",
+                  "file_id": "BQACAgIAAxkBAAJIH2o3wPkzL3j8xGyREAl9T-PlAmMvAAIxnQACdm_BSf8JUMqsiG99PAQ"
+                }
+              ]
+            }
+          }
+        },
+        "theory": {
+          "label": "📚 Теориялық базалар",
+          "type": "list",
+          "items": []
+        },
+        "checklists": {
+          "label": "✅ Чек-листтер",
+          "type": "list",
+          "items": [
+            {
+              "label": "1️⃣ Компьютерлік желі чек-лист",
+              "file_id": "BQACAgIAAxkBAAJIMWo3w3zueNT7okLKVqefeTmXkKHeAAKInwAC6-DASahAuxNsG1FKPAQ"
+            },
+            {
+              "label": "2️⃣ HTML тегтер чек-лист",
+              "file_id": "BQACAgIAAxkBAAJIQ2o3w_J0X1j97X47swobbZGd_RMBAAKKnwAC6-DASUroYqo4UFbWPAQ"
+            },
+            {
+              "label": "3️⃣ MYSQL чек-лист",
+              "file_id": "BQACAgIAAxkBAAJIS2o3xD_Q8oua_B7vHLJTcEtrXvahAAKOnwAC6-DASXxFiR0bsJR2PAQ"
+            },
+            {
+              "label": "4️⃣ PYTHON чек-лист",
+              "file_id": "BQACAgIAAxkBAAJIU2o3xJXHb-o2PqbUXVHuRzegKyayAAKUnwAC6-DASUBZCzVf7Lj7PAQ"
+            },
+            {
+              "label": "5️⃣ Python: Жолдармен жұмыс чек-лист",
+              "file_id": "BQACAgIAAxkBAAJIW2o3xNGInCUMK9ETUAwxKeOXse7tAAKXnwAC6-DASePWy6p11QU1PAQ"
+            },
+            {
+              "label": "6️⃣ Терминдер жинағы",
+              "file_id": "BQACAgIAAxkBAAJIY2o3xQf1VL56qrpSk9hnh1Rm8i1dAAKYnwAC6-DASZm_su5nIyogPAQ"
+            },
+            {
+              "label": "7️⃣ Теориялар жинағы",
+              "file_id": "BQACAgIAAxkBAAJIa2o3xUv9LpqPR2VPI8IyM1rIZcvbAAKcnwAC6-DASQioRWYjaKwNPAQ"
+            },
+            {
+              "label": "8️⃣ Виртуалды және кеңейтілген шынайылық чек-лист",
+              "file_id": "BQACAgIAAxkBAAJI6Wo4ErSoNxPx-OZNgFZoYyRpjzgeAAKcogAC6-DASXh9UZUiGCvZPAQ"
+            }
+          ]
+        },
+        "specs": {
+          "label": "📄 Спецификация",
+          "type": "list",
+          "items": []
+        }
+      }
+    },
+    "physics": {
+      "label": "⚛️ Физика",
+      "type": "coming_soon"
+    }
+  },
+  "proforientation": {
+    "label": "Саған қажетті заттар😉",
+    "sections": {
+      "professions": {
+        "label": "🎯 Мамандықтар тізімі",
+        "type": "list",
+        "items": [
+          {
+            "label": "Математика + Физика",
+            "file_id": "BQACAgIAAxkBAAMTaivspfgwUqgcE-nCk37sZ0gO4SYAAiuXAAKtAmBJpnCkhOKSZtA8BA"
+          },
+          {
+            "label": "Математика + Информатика",
+            "file_id": "BQACAgIAAxkBAAMSaivspeEzhdsdLQYzJQ6s3wwrmqIAAiqXAAKtAmBJ07JWBgNAsME8BA"
+          },
+          {
+            "label": "Математика + География",
+            "file_id": "BQACAgIAAxkBAAMRaivspUaFPGPg8CVR9G5T5oA197AAAimXAAKtAmBJLZ08FZYxLtQ8BA"
+          }
+        ]
+      },
+      "guides": {
+        "label": "📘 Гайдтар",
+        "type": "single",
+        "file_id": "BQACAgIAAxkBAAMPaivpCPcatwABXyOQ-45I4jWOoCyLAAL5lgACrQJgSd6V6xmqLzCxPAQ"
+      }
+    }
+  }
+}
