@@ -88,9 +88,9 @@ admin_main_keyboard = ReplyKeyboardMarkup(keyboard=[
 ], resize_keyboard=True)
 
 ROOT_BUTTONS = {
-    "📐 Математика": ["math"],
-    "💻 Информатика": ["informatics"],
-    "⚛️ Физика": ["physics"],
+    "📐 Математика": ["subjects", "math"],
+    "💻 Информатика": ["subjects", "informatics"],
+    "⚛️ Физика": ["subjects", "physics"],
     "Саған қажетті заттар😉": ["proforientation"],
 }
 
