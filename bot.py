@@ -10,7 +10,7 @@ from aiogram.fsm.state import State, StatesGroup
 from dotenv import load_dotenv
 
 import materials as mat
-import admin_new as admin
+import admin
 import github_sync
 
 load_dotenv()
