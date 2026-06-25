@@ -250,6 +250,7 @@ async def admin_choose_root(message: Message, state: FSMContext):
         await state.update_data(action="delete_root", path=[])
         return
 
+    data = admin.load_materials()
     roots = await state.get_data()
     roots = roots.get("root_folders", {})
     
@@ -263,8 +264,14 @@ async def admin_choose_root(message: Message, state: FSMContext):
         await message.answer("❌ Раздел табылмады")
         return
 
-await state.update_data(current_path=["subjects", selected_key])
-    await show_folder_contents(message, state, [selected_key])
+    subjects = data.get("subjects", {})
+    if selected_key in subjects:
+        path = ["subjects", selected_key]
+    else:
+        path = [selected_key]
+    
+    await state.update_data(current_path=path)
+    await show_folder_contents(message, state, path)
 
 async def show_folder_contents(message: Message, state: FSMContext, path: list):
     if message.from_user.id != ADMIN_ID:
