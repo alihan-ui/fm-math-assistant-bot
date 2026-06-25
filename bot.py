@@ -627,7 +627,6 @@ async def show_stats(message: Message):
     top_text = "\n".join(f"{i+1}. {b} — {c}" for i, (b, c) in enumerate(top_buttons)) or "—"
 
     text = f"📊 Статистика\n\n👥 Барлық пайдаланушылар: {total_users}\n🆕 Бүгін жаңалар: {new_today}\n🖱 Жалпы әрекеттер: {total_actions}\n\n🔥 Топ-5 батырмалар:\n{top_text}"
-
     await message.answer(text, reply_markup=admin_main_keyboard)
 
 @dp.message(F.text.in_(ROOT_BUTTONS.keys()))
