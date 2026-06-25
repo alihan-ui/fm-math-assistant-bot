@@ -217,9 +217,34 @@
         }
       }
     },
-    "physics": {
+  "physics": {
       "label": "⚛️ Физика",
-      "type": "coming_soon"
+      "sections": {
+        "formulas": {
+          "label": "📖 Формула жинақтары",
+          "type": "list",
+          "items": []
+        },
+        "streams": {
+          "label": "🎥 Эфирлер",
+          "type": "list",
+          "items": []
+        },
+        "checklists": {
+          "label": "✅ Чек-листтер",
+          "type": "list",
+          "items": []
+        },
+        "books": {
+          "label": "📚 Есеп жинақтары",
+          "type": "list",
+          "items": []
+        },
+        "specs": {
+          "label": "📄 Спецификациялар",
+          "type": "single"
+        }
+      }
     }
   },
   "proforientation": {
