@@ -1,5 +1,5 @@
 """
-Новая рекурсивная админка для добавления/удаления разделов и материалов на любом уровне.
+Рекурсивная админка для добавления/удаления разделов и материалов на любом уровне.
 Поддерживает глубину вложенности до 10 уровней.
 """
 import json
@@ -147,26 +147,41 @@ def get_root_folders() -> dict:
 def add_root_folder(folder_key: str, folder_label: str) -> bool:
     """Добавить новый корневой раздел"""
     data = load_materials()
-    if folder_key in data:
+    if "subjects" not in data:
+        data["subjects"] = {}
+    if folder_key in data["subjects"]:
         return False
-    data[folder_key] = {"label": folder_label}
+    data["subjects"][folder_key] = {"label": folder_label}
     save_materials(data)
     return True
 
 def rename_root_folder(folder_key: str, new_label: str) -> bool:
     """Переименовать корневой раздел"""
     data = load_materials()
-    if folder_key not in data:
-        return False
-    data[folder_key]["label"] = new_label
-    save_materials(data)
-    return True
+    subjects = data.get("subjects", {})
+    prof_key = "proforientation"
+    
+    if folder_key in subjects:
+        subjects[folder_key]["label"] = new_label
+        save_materials(data)
+        return True
+    elif folder_key == prof_key and prof_key in data:
+        data[prof_key]["label"] = new_label
+        save_materials(data)
+        return True
+    return False
 
 def delete_root_folder(folder_key: str) -> bool:
     """Удалить корневой раздел"""
     data = load_materials()
-    if folder_key not in data:
-        return False
-    del data[folder_key]
-    save_materials(data)
-    return True
+    subjects = data.get("subjects", {})
+    
+    if folder_key in subjects:
+        del subjects[folder_key]
+        save_materials(data)
+        return True
+    elif folder_key == "proforientation" and folder_key in data:
+        del data[folder_key]
+        save_materials(data)
+        return True
+    return False
