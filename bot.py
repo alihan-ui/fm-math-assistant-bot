@@ -18,15 +18,10 @@ TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID", "885045097"))
 
 STATS_FILE = "stats.json"
-
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 BACK_LABEL = "🔙 Артқа"
-
-# ════════════════════════════════════════════════════════════════════════════════
-# СОСТОЯНИЯ (FSM)
-# ════════════════════════════════════════════════════════════════════════════════
 
 class NavStates(StatesGroup):
     browsing = State()
@@ -40,10 +35,6 @@ class AdminStates(StatesGroup):
     choosing_rename = State()
     input_new_name = State()
     choosing_delete = State()
-
-# ════════════════════════════════════════════════════════════════════════════════
-# СТАТИСТИКА
-# ════════════════════════════════════════════════════════════════════════════════
 
 def load_stats():
     if not os.path.exists(STATS_FILE):
@@ -62,13 +53,7 @@ def track(user_id: int, first_name: str, button: str = None):
     user_id_str = str(user_id)
 
     if user_id_str not in stats["users"]:
-        stats["users"][user_id_str] = {
-            "name": first_name,
-            "first_seen": today,
-            "last_seen": now,
-            "count": 0,
-            "buttons": {}
-        }
+        stats["users"][user_id_str] = {"name": first_name, "first_seen": today, "last_seen": now, "count": 0, "buttons": {}}
 
     u = stats["users"][user_id_str]
     u["name"] = first_name
@@ -81,43 +66,26 @@ def track(user_id: int, first_name: str, button: str = None):
 
     save_stats(stats)
 
-# ════════════════════════════════════════════════════════════════════════════════
-# ОТПРАВКА МАТЕРИАЛОВ
-# ════════════════════════════════════════════════════════════════════════════════
-
 async def send_material(message: Message, file_id: str):
     await message.answer_document(file_id)
-    await message.answer(
-        "Үздік нәтиже сізді күтеді 🏆\n\n"
-        "Дайындықты жалғастырамыс ба? 😇"
-    )
+    await message.answer("Үздік нәтиже сізді күтеді 🏆\n\nДайындықты жалғастырамыс ба? 😇")
 
-async def send_links(message: Message, title: str, links: list[str]):
+async def send_links(message: Message, title: str, links: list):
     numbered = "\n\n".join(f"{i+1}️⃣ {link}" for i, link in enumerate(links))
     await message.answer(f"{title}\n\n{numbered}")
 
-# ════════════════════════════════════════════════════════════════════════════════
-# КЛАВИАТУРЫ
-# ════════════════════════════════════════════════════════════════════════════════
+main_keyboard = ReplyKeyboardMarkup(keyboard=[
+    [KeyboardButton(text="📐 Математика")],
+    [KeyboardButton(text="💻 Информатика")],
+    [KeyboardButton(text="⚛️ Физика")],
+    [KeyboardButton(text="Саған қажетті заттар😉")],
+], resize_keyboard=True)
 
-main_keyboard = ReplyKeyboardMarkup(
-    keyboard=[
-        [KeyboardButton(text="📐 Математика")],
-        [KeyboardButton(text="💻 Информатика")],
-        [KeyboardButton(text="⚛️ Физика")],
-        [KeyboardButton(text="Саған қажетті заттар😉")],
-    ],
-    resize_keyboard=True
-)
-
-admin_main_keyboard = ReplyKeyboardMarkup(
-    keyboard=[
-        [KeyboardButton(text="📊 Статистика")],
-        [KeyboardButton(text="⚙️ Админка")],
-        [KeyboardButton(text="🔙 Артқа")],
-    ],
-    resize_keyboard=True
-)
+admin_main_keyboard = ReplyKeyboardMarkup(keyboard=[
+    [KeyboardButton(text="📊 Статистика")],
+    [KeyboardButton(text="⚙️ Админка")],
+    [KeyboardButton(text="🔙 Артқа")],
+], resize_keyboard=True)
 
 ROOT_BUTTONS = {
     "📐 Математика": ["math"],
@@ -126,22 +94,13 @@ ROOT_BUTTONS = {
     "Саған қажетті заттар😉": ["proforientation"],
 }
 
-# ════════════════════════════════════════════════════════════════════════════════
-# ПОЛЬЗОВАТЕЛЬСКАЯ НАВИГАЦИЯ
-# ════════════════════════════════════════════════════════════════════════════════
-
 def build_keyboard_for_node(node: dict) -> ReplyKeyboardMarkup:
-    """Строит клавиатуру из дочерних узлов текущего узла"""
     children = mat.list_children(node) or {}
-    rows = []
-    for key, child in children.items():
-        label = child.get("label", key)
-        rows.append([KeyboardButton(text=label)])
+    rows = [[KeyboardButton(text=child.get("label", key))] for key, child in children.items()]
     rows.append([KeyboardButton(text=BACK_LABEL)])
     return ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
 
 def build_list_keyboard(node: dict) -> ReplyKeyboardMarkup:
-    """Строит клавиатуру для узла с материалами"""
     items = node.get("items", [])
     rows = [[KeyboardButton(text=item["label"])] for item in items]
     if not items:
@@ -149,8 +108,7 @@ def build_list_keyboard(node: dict) -> ReplyKeyboardMarkup:
     rows.append([KeyboardButton(text=BACK_LABEL)])
     return ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
 
-async def render_node(message: Message, state: FSMContext, path: list[str]):
-    """Отображает узел дерева"""
+async def render_node(message: Message, state: FSMContext, path: list):
     data = mat.load_materials()
     node = mat.get_node(data, path)
 
@@ -177,26 +135,19 @@ async def render_node(message: Message, state: FSMContext, path: list[str]):
     if node_type == "list":
         await state.update_data(path=path)
         await state.set_state(NavStates.browsing)
-        await message.answer(
-            f"{node_label} бөлімін таңдаңыз😊:",
-            reply_markup=build_list_keyboard(node)
-        )
+        await message.answer(f"{node_label} бөлімін таңдаңыз😊:", reply_markup=build_list_keyboard(node))
         return
 
     children = mat.list_children(node)
     if children:
         await state.update_data(path=path)
         await state.set_state(NavStates.browsing)
-        await message.answer(
-            f"{node_label} бөлімін таңдаңыз:",
-            reply_markup=build_keyboard_for_node(node)
-        )
+        await message.answer(f"{node_label} бөлімін таңдаңыз:", reply_markup=build_keyboard_for_node(node))
         return
 
     await message.answer("⏳ Материал табылмады")
 
-async def handle_list_item_click(message: Message, state: FSMContext, path: list[str], clicked_label: str) -> bool:
-    """Обработка клика на материал в списке"""
+async def handle_list_item_click(message: Message, state: FSMContext, path: list, clicked_label: str) -> bool:
     data = mat.load_materials()
     node = mat.get_node(data, path)
     if not node or node.get("type") != "list":
@@ -216,15 +167,10 @@ async def handle_list_item_click(message: Message, state: FSMContext, path: list
             return True
     return False
 
-def parent_path(path: list[str]) -> list[str]:
-    """Путь родителя"""
+def parent_path(path: list) -> list:
     if len(path) <= 1:
         return []
     return path[:-1]
-
-# ════════════════════════════════════════════════════════════════════════════════
-# КОМАНДЫ
-# ════════════════════════════════════════════════════════════════════════════════
 
 @dp.message(CommandStart())
 async def start(message: Message, state: FSMContext):
@@ -320,7 +266,7 @@ async def admin_choose_root(message: Message, state: FSMContext):
     await state.update_data(current_path=[selected_key])
     await show_folder_contents(message, state, [selected_key])
 
-async def show_folder_contents(message: Message, state: FSMContext, path: list[str]):
+async def show_folder_contents(message: Message, state: FSMContext, path: list):
     if message.from_user.id != ADMIN_ID:
         return
 
@@ -365,14 +311,9 @@ async def show_folder_contents(message: Message, state: FSMContext, path: list[s
     await message.answer(f"📂 {node_label}\n\nТаңдаңыз:", reply_markup=keyboard)
     
     await state.set_state(AdminStates.in_folder)
-    await state.update_data(
-        current_path=path,
-        current_children=children,
-        current_items=items,
-        current_node_type=node_type
-    )
+    await state.update_data(current_path=path, current_children=children, current_items=items, current_node_type=node_type)
 
-@dp.message(F.text == "in_folder")
+@dp.message(AdminStates.in_folder)
 async def admin_in_folder(message: Message, state: FSMContext):
     if message.from_user.id != ADMIN_ID:
         return
@@ -477,8 +418,6 @@ async def admin_input_folder_name(message: Message, state: FSMContext):
             await message.answer("❌ Ошибка")
             await show_folder_contents(message, state, path)
         return
-
-    await message.answer("❌ Белгісіз әрекет")
 
 @dp.message(AdminStates.input_material_name)
 async def admin_input_material_name(message: Message, state: FSMContext):
@@ -604,8 +543,6 @@ async def admin_input_new_name(message: Message, state: FSMContext):
             await show_folder_contents(message, state, path)
         return
 
-    await message.answer("❌ Ошибка")
-
 @dp.message(AdminStates.choosing_delete)
 async def admin_choosing_delete(message: Message, state: FSMContext):
     if message.from_user.id != ADMIN_ID:
@@ -673,8 +610,6 @@ async def admin_choosing_delete(message: Message, state: FSMContext):
             await show_folder_contents(message, state, path)
         return
 
-    await message.answer("❌ Ошибка")
-
 @dp.message(F.text == "📊 Статистика")
 async def show_stats(message: Message):
     if message.from_user.id != ADMIN_ID:
@@ -691,13 +626,7 @@ async def show_stats(message: Message):
     top_buttons = sorted(buttons.items(), key=lambda x: x[1], reverse=True)[:5]
     top_text = "\n".join(f"{i+1}. {b} — {c}" for i, (b, c) in enumerate(top_buttons)) or "—"
 
-    text = (
-        f"📊 Статистика\n\n"
-        f"👥 Барлық пайдаланушылар: {total_users}\n"
-        f"🆕 Бүгін жаңалар: {new_today}\n"
-        f"🖱 Жалпы әрекеттер: {total_actions}\n\n"
-        f"🔥 Топ-5 батырмалар:\n{top_text}"
-    )
+    text = f"📊 Статистика\n\n👥 Барлық пайдаланушылар: {total_users}\n🆕 Бүгін жаңалар: {new_today}\n🖱 Жалпы әрекеттер: {total_actions}\n\n🔥 Топ-5 батырмалар:\n{top_text}"
 
     await message.answer(text, reply_markup=admin_main_keyboard)
 
