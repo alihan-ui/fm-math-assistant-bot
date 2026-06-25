@@ -10,6 +10,7 @@ from aiogram.fsm.state import State, StatesGroup
 from dotenv import load_dotenv
 
 import materials as mat
+import admin_new as admin
 import github_sync
 
 load_dotenv()
@@ -21,25 +22,21 @@ STATS_FILE = "stats.json"
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-BACK_LABEL = "🔙 Артқа"  # кнопка "назад" внутри дерева материалов / в админке
-
-# ════════════════════════════════════════════════════════════════════════════════
-# СОСТОЯНИЯ (FSM)
-# ════════════════════════════════════════════════════════════════════════════════
-
-class AdminStates(StatesGroup):
-    waiting_for_path = State()
-    waiting_for_material_name = State()
-    waiting_for_file = State()
-
+BACK_LABEL = "🔙 Артқа"
 
 class NavStates(StatesGroup):
-    browsing = State()  # данные: path (list[str]) — текущий путь в дереве materials.json
+    browsing = State()
 
-
-# ════════════════════════════════════════════════════════════════════════════════
-# СТАТИСТИКА
-# ════════════════════════════════════════════════════════════════════════════════
+class AdminStates(StatesGroup):
+    choosing_root = State()
+    in_folder = State()
+    choosing_action = State()
+    input_folder_name = State()
+    input_material_name = State()
+    waiting_file = State()
+    choosing_rename = State()
+    input_new_name = State()
+    choosing_delete = State()
 
 def load_stats():
     if not os.path.exists(STATS_FILE):
@@ -47,17 +44,14 @@ def load_stats():
     with open(STATS_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
 
-
 def save_stats(stats):
     with open(STATS_FILE, "w", encoding="utf-8") as f:
         json.dump(stats, f, ensure_ascii=False, indent=2)
-
 
 def track(user_id: int, first_name: str, button: str = None):
     stats = load_stats()
     today = str(date.today())
     now = datetime.now().isoformat(timespec="seconds")
-
     user_id_str = str(user_id)
 
     if user_id_str not in stats["users"]:
@@ -80,28 +74,6 @@ def track(user_id: int, first_name: str, button: str = None):
 
     save_stats(stats)
 
-
-# ════════════════════════════════════════════════════════════════════════════════
-# ОТПРАВКА МАТЕРИАЛОВ
-# ════════════════════════════════════════════════════════════════════════════════
-
-async def send_material(message: Message, file_id: str):
-    await message.answer_document(file_id)
-    await message.answer(
-        "Үздік нәтиже сізді күтеді 🏆\n\n"
-        "Дайындықты жалғастырамыс ба? 😇"
-    )
-
-
-async def send_links(message: Message, title: str, links: list[str]):
-    numbered = "\n\n".join(f"{i+1}️⃣ {link}" for i, link in enumerate(links))
-    await message.answer(f"{title}\n\n{numbered}")
-
-
-# ════════════════════════════════════════════════════════════════════════════════
-# СТАТИЧНЫЕ КЛАВИАТУРЫ (то, что вне дерева materials.json)
-# ════════════════════════════════════════════════════════════════════════════════
-
 main_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="📐 Математика")],
@@ -112,128 +84,14 @@ main_keyboard = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
-admin_keyboard = ReplyKeyboardMarkup(
+admin_main_keyboard = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text="➕ Материал қосу")],
         [KeyboardButton(text="📊 Статистика")],
+        [KeyboardButton(text="⚙️ Админка")],
         [KeyboardButton(text="🔙 Артқа")],
     ],
     resize_keyboard=True
 )
-
-# Корневые узлы дерева materials.json и подпись кнопки, которая в них ведёт
-ROOT_BUTTONS = {
-    "📐 Математика": ["subjects", "math"],
-    "💻 Информатика": ["subjects", "informatics"],
-    "⚛️ Физика": ["subjects", "physics"],
-    "Саған қажетті заттар😉": ["proforientation"],
-}
-
-
-# ════════════════════════════════════════════════════════════════════════════════
-# ДИНАМИЧЕСКАЯ НАВИГАЦИЯ ПО ДЕРЕВУ materials.json
-# ════════════════════════════════════════════════════════════════════════════════
-
-def build_keyboard_for_node(node: dict) -> ReplyKeyboardMarkup:
-    """Строит клавиатуру из дочерних узлов (sections/subsections) текущего узла."""
-    children = mat.list_children(node) or {}
-    rows = []
-    for key, child in children.items():
-        label = child.get("label", key)
-        if child.get("type") == "coming_soon" and "⏳" not in label:
-            label = f"⏳ {label}"
-        rows.append([KeyboardButton(text=label)])
-    rows.append([KeyboardButton(text=BACK_LABEL)])
-    return ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
-
-
-def build_list_keyboard(node: dict) -> ReplyKeyboardMarkup:
-    """Строит клавиатуру для узла type=list — кнопка на каждый item."""
-    items = node.get("items", [])
-    rows = [[KeyboardButton(text=item["label"])] for item in items]
-    if not items:
-        rows.append([KeyboardButton(text="⏳ Әзірге материал жоқ")])
-    rows.append([KeyboardButton(text=BACK_LABEL)])
-    return ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
-
-
-async def render_node(message: Message, state: FSMContext, path: list[str]):
-    """Отображает узел дерева по пути: либо список подразделов, либо список материалов."""
-    data = mat.load_materials()
-    node = mat.get_node(data, path)
-
-    if node is None:
-        await message.answer("⏳ Бөлім табылмады, басты мәзірге оралыңыз.", reply_markup=main_keyboard)
-        await state.clear()
-        return
-
-    node_type = node.get("type")
-
-    if node_type == "coming_soon":
-        await message.answer("⏳ Жақында қосылады!")
-        return
-
-    if node_type == "single":
-        file_id = node.get("file_id")
-        if file_id:
-            await send_material(message, file_id)
-        else:
-            await message.answer("⏳ Материал жақында қосылады!")
-        return
-
-    if node_type == "list":
-        await state.update_data(path=path)
-        await state.set_state(NavStates.browsing)
-        await message.answer(
-            f"{node.get('label', '')} бөлімін таңдаңыз😊:",
-            reply_markup=build_list_keyboard(node)
-        )
-        return
-
-    # Узел-папка (есть sections/subsections) — показываем подменю
-    await state.update_data(path=path)
-    await state.set_state(NavStates.browsing)
-    await message.answer(
-        f"{node.get('label', '')} бөлімін таңдаңыз:",
-        reply_markup=build_keyboard_for_node(node)
-    )
-
-
-async def handle_list_item_click(message: Message, state: FSMContext, path: list[str], clicked_label: str) -> bool:
-    """
-    Если мы внутри узла type=list и пользователь нажал на один из items —
-    отправляем материал/ссылки. Возвращает True если клик был обработан.
-    """
-    data = mat.load_materials()
-    node = mat.get_node(data, path)
-    if not node or node.get("type") != "list":
-        return False
-
-    for item in node.get("items", []):
-        if item.get("label") == clicked_label:
-            track(message.from_user.id, message.from_user.first_name or "Қолданушы", clicked_label)
-            if item.get("type") == "links":
-                await send_links(message, item.get("title", clicked_label), item.get("links", []))
-            else:
-                file_id = item.get("file_id")
-                if file_id:
-                    await send_material(message, file_id)
-                else:
-                    await message.answer("⏳ Материал жақында қосылады!")
-            return True
-    return False
-
-
-def parent_path(path: list[str]) -> list[str]:
-    """Путь родителя для кнопки 'Артқа'. Для верхнего уровня — пустой путь (главное меню)."""
-    if len(path) <= 2:
-        return []
-    return path[:-1]
-
-
-# ════════════════════════════════════════════════════════════════════════════════
-# КОМАНДЫ
-# ════════════════════════════════════════════════════════════════════════════════
 
 @dp.message(CommandStart())
 async def start(message: Message, state: FSMContext):
@@ -250,15 +108,449 @@ async def start(message: Message, state: FSMContext):
         reply_markup=main_keyboard
     )
 
-
 @dp.message(Command("admin"))
 async def cmd_admin(message: Message, state: FSMContext):
     if message.from_user.id != ADMIN_ID:
         await message.answer("❌ Сізге рұқсат жоқ")
         return
     await state.clear()
-    await message.answer("📊 Админ панель ашылды:", reply_markup=admin_keyboard)
+    await message.answer("📊 Админ панель ашылды:", reply_markup=admin_main_keyboard)
 
+@dp.message(F.text == "⚙️ Админка")
+async def admin_menu(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+
+    data = admin.load_materials()
+    roots = admin.get_root_folders()
+    
+    rows = [[KeyboardButton(text=f"{root_data.get('label', key)}")] for key, root_data in roots.items()]
+    rows.append([KeyboardButton(text="➕ Добавить раздел")])
+    rows.append([KeyboardButton(text="🔄 Переименовать раздел")])
+    rows.append([KeyboardButton(text="❌ Удалить раздел")])
+    rows.append([KeyboardButton(text="🔙 Артқа")])
+    
+    keyboard = ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
+    await message.answer("Админка. Раздел таңдаңыз:", reply_markup=keyboard)
+    await state.set_state(AdminStates.choosing_root)
+    await state.update_data(root_folders=roots)
+
+@dp.message(AdminStates.choosing_root)
+async def admin_choose_root(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+
+    if message.text == "🔙 Артқа":
+        await message.answer("📊 Админ панель ашылды:", reply_markup=admin_main_keyboard)
+        await state.clear()
+        return
+
+    if message.text == "➕ Добавить раздел":
+        await message.answer("Жаңа раздел атын жазыңыз:")
+        await state.set_state(AdminStates.input_folder_name)
+        await state.update_data(action="add_root", path=[])
+        return
+
+    if message.text == "🔄 Переименовать раздел":
+        roots = await state.get_data()
+        roots = roots.get("root_folders", {})
+        rows = [[KeyboardButton(text=f"{root_data.get('label', key)}")] for key, root_data in roots.items()]
+        rows.append([KeyboardButton(text="🔙 Артқа")])
+        keyboard = ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
+        await message.answer("Переименовать раздел таңдаңыз:", reply_markup=keyboard)
+        await state.set_state(AdminStates.choosing_rename)
+        await state.update_data(action="rename_root", path=[])
+        return
+
+    if message.text == "❌ Удалить раздел":
+        roots = await state.get_data()
+        roots = roots.get("root_folders", {})
+        rows = [[KeyboardButton(text=f"{root_data.get('label', key)}")] for key, root_data in roots.items()]
+        rows.append([KeyboardButton(text="🔙 Артқа")])
+        keyboard = ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
+        await message.answer("Удалить раздел таңдаңыз:", reply_markup=keyboard)
+        await state.set_state(AdminStates.choosing_delete)
+        await state.update_data(action="delete_root", path=[])
+        return
+
+    data = admin.load_materials()
+    roots = await state.get_data()
+    roots = roots.get("root_folders", {})
+    
+    selected_key = None
+    for key, root_data in roots.items():
+        if root_data.get("label") == message.text:
+            selected_key = key
+            break
+    
+    if selected_key is None:
+        await message.answer("❌ Раздел табылмады")
+        return
+
+    await state.update_data(current_path=[selected_key])
+    await show_folder_contents(message, state, [selected_key])
+
+async def show_folder_contents(message: Message, state: FSMContext, path: list[str]):
+    if message.from_user.id != ADMIN_ID:
+        return
+
+    data = admin.load_materials()
+    node = admin.get_node_by_path(data, path)
+    
+    if node is None:
+        await message.answer("❌ Папка табылмады")
+        return
+
+    children, items, node_type = admin.list_children_and_items(node)
+    node_label = node.get("label", path[-1] if path else "Root")
+
+    rows = []
+    
+    for key, child in children.items():
+        label = child.get("label", key)
+        rows.append([KeyboardButton(text=label)])
+
+    for item in items:
+        label = item.get("label", "?")
+        rows.append([KeyboardButton(text=f"📋 {label}")])
+
+    if node_type == "folders":
+        rows.append([KeyboardButton(text="➕ Добавить раздел")])
+    elif node_type == "items":
+        rows.append([KeyboardButton(text="📄 Добавить материал")])
+    elif node_type == "mixed":
+        rows.append([KeyboardButton(text="➕ Добавить раздел")])
+        rows.append([KeyboardButton(text="📄 Добавить материал")])
+    elif node_type == "unknown":
+        rows.append([KeyboardButton(text="➕ Добавить раздел")])
+        rows.append([KeyboardButton(text="📄 Добавить материал")])
+
+    if children or items:
+        rows.append([KeyboardButton(text="🔄 Переименовать")])
+        rows.append([KeyboardButton(text="❌ Удалить")])
+
+    rows.append([KeyboardButton(text="🔙 Назад")])
+
+    keyboard = ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
+    await message.answer(f"📂 {node_label}\n\nТаңдаңыз:", reply_markup=keyboard)
+    
+    await state.set_state(AdminStates.in_folder)
+    await state.update_data(
+        current_path=path,
+        current_children=children,
+        current_items=items,
+        current_node_type=node_type
+    )
+
+@dp.message(AdminStates.in_folder)
+async def admin_in_folder(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+
+    if message.text == "🔙 Назад":
+        data_state = await state.get_data()
+        path = data_state.get("current_path", [])
+        if len(path) > 1:
+            await show_folder_contents(message, state, path[:-1])
+        else:
+            await admin_menu(message, state)
+        return
+
+    if message.text == "➕ Добавить раздел":
+        await message.answer("Раздел атын жазыңыз:")
+        await state.set_state(AdminStates.input_folder_name)
+        await state.update_data(action="add_folder")
+        return
+
+    if message.text == "📄 Добавить материал":
+        await message.answer("Материал атын жазыңыз:")
+        await state.set_state(AdminStates.input_material_name)
+        await state.update_data(action="add_item")
+        return
+
+    if message.text == "🔄 Переименовать":
+        data_state = await state.get_data()
+        children = data_state.get("current_children", {})
+        items = data_state.get("current_items", [])
+
+        rows = []
+        for key, child in children.items():
+            rows.append([KeyboardButton(text=child.get("label", key))])
+        for item in items:
+            rows.append([KeyboardButton(text=f"📋 {item.get('label')}")])
+        rows.append([KeyboardButton(text="🔙 Артқа")])
+
+        keyboard = ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
+        await message.answer("Переименовать таңдаңыз:", reply_markup=keyboard)
+        await state.set_state(AdminStates.choosing_rename)
+        await state.update_data(action="rename_in_folder")
+        return
+
+    if message.text == "❌ Удалить":
+        data_state = await state.get_data()
+        children = data_state.get("current_children", {})
+        items = data_state.get("current_items", [])
+
+        rows = []
+        for key, child in children.items():
+            rows.append([KeyboardButton(text=child.get("label", key))])
+        for item in items:
+            rows.append([KeyboardButton(text=f"📋 {item.get('label')}")])
+        rows.append([KeyboardButton(text="🔙 Артқа")])
+
+        keyboard = ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
+        await message.answer("Удалить таңдаңыз:", reply_markup=keyboard)
+        await state.set_state(AdminStates.choosing_delete)
+        await state.update_data(action="delete_in_folder")
+        return
+
+    data_state = await state.get_data()
+    path = data_state.get("current_path", [])
+    children = data_state.get("current_children", {})
+
+    for key, child in children.items():
+        if child.get("label") == message.text:
+            await show_folder_contents(message, state, path + [key])
+            return
+
+    await message.answer("❓ Опция табылмады")
+
+@dp.message(AdminStates.input_folder_name)
+async def admin_input_folder_name(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+
+    data_state = await state.get_data()
+    action = data_state.get("action")
+    path = data_state.get("current_path", [])
+    folder_name = message.text
+
+    data = admin.load_materials()
+
+    if action == "add_root":
+        folder_key = folder_name.lower().replace(" ", "_")
+        if admin.add_root_folder(folder_key, folder_name):
+            admin.save_materials(admin.load_materials())
+            await message.answer(f"✅ Раздел '{folder_name}' қосылды!")
+            await admin_menu(message, state)
+        else:
+            await message.answer("❌ Ошибка")
+            await admin_menu(message, state)
+        return
+
+    if action == "add_folder":
+        folder_key = folder_name.lower().replace(" ", "_")
+        if admin.add_folder_to_node(data, path, folder_key, folder_name):
+            admin.save_materials(data)
+            await message.answer(f"✅ Раздел '{folder_name}' қосылды!")
+            await show_folder_contents(message, state, path)
+        else:
+            await message.answer("❌ Ошибка")
+            await show_folder_contents(message, state, path)
+        return
+
+    await message.answer("❌ Белгісіз әрекет")
+
+@dp.message(AdminStates.input_material_name)
+async def admin_input_material_name(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+
+    await state.update_data(material_name=message.text)
+    await message.answer("Файлды жіберіңіз:")
+    await state.set_state(AdminStates.waiting_file)
+
+@dp.message(AdminStates.waiting_file)
+async def admin_waiting_file(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+
+    if not message.document and not message.video and not message.audio:
+        await message.answer("❌ Файл жіберіңіз!")
+        return
+
+    file_id = None
+    file_type = "unknown"
+    
+    if message.document:
+        file_id = message.document.file_id
+        file_type = "document"
+    elif message.video:
+        file_id = message.video.file_id
+        file_type = "video"
+    elif message.audio:
+        file_id = message.audio.file_id
+        file_type = "audio"
+
+    data_state = await state.get_data()
+    path = data_state.get("current_path", [])
+    material_name = data_state.get("material_name", "?")
+
+    data = admin.load_materials()
+    if admin.add_item_to_node(data, path, material_name, file_id):
+        admin.save_materials(data)
+        
+        status = "✅ Материал қосылды!"
+        try:
+            commit_sha = github_sync.commit_materials_json("materials.json", material_name)
+            status += f"\n🚀 GitHub-ке жіберілді (commit {commit_sha})"
+        except Exception as e:
+            status += f"\n⚠️ GitHub: {str(e)[:50]}"
+        
+        await message.answer(f"{status}\n\n📋 File ID:\n`{file_id}`", parse_mode="Markdown")
+        await show_folder_contents(message, state, path)
+    else:
+        await message.answer("❌ Ошибка")
+        await show_folder_contents(message, state, path)
+
+@dp.message(AdminStates.choosing_rename)
+async def admin_choosing_rename(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+
+    if message.text == "🔙 Артқа":
+        data_state = await state.get_data()
+        path = data_state.get("current_path", [])
+        if path:
+            await show_folder_contents(message, state, path)
+        else:
+            await admin_menu(message, state)
+        return
+
+    await state.update_data(rename_target=message.text)
+    await message.answer("Жаңа атты жазыңыз:")
+    await state.set_state(AdminStates.input_new_name)
+
+@dp.message(AdminStates.input_new_name)
+async def admin_input_new_name(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+
+    data_state = await state.get_data()
+    action = data_state.get("action", "")
+    path = data_state.get("current_path", [])
+    old_label = data_state.get("rename_target", "")
+    new_label = message.text
+
+    data = admin.load_materials()
+
+    if action == "rename_root":
+        roots = admin.get_root_folders()
+        root_key = None
+        for key, root_data in roots.items():
+            if root_data.get("label") == old_label:
+                root_key = key
+                break
+        if root_key and admin.rename_root_folder(root_key, new_label):
+            await message.answer(f"✅ Переименовано!")
+            await admin_menu(message, state)
+        else:
+            await message.answer("❌ Ошибка")
+            await admin_menu(message, state)
+        return
+
+    if action == "rename_in_folder":
+        node = admin.get_node_by_path(data, path)
+        if node is None:
+            await message.answer("❌ Ошибка")
+            return
+
+        children = node
+        found = False
+
+        for key, child in list(children.items()):
+            if key not in ("label", "type", "file_id", "items", "links", "title"):
+                if isinstance(child, dict) and child.get("label") == old_label:
+                    child["label"] = new_label
+                    found = True
+                    break
+
+        if not found and node.get("type") == "list":
+            for item in node.get("items", []):
+                if item.get("label") == old_label:
+                    item["label"] = new_label
+                    found = True
+                    break
+
+        if found:
+            admin.save_materials(data)
+            await message.answer(f"✅ Переименовано!")
+            await show_folder_contents(message, state, path)
+        else:
+            await message.answer("❌ Ошибка")
+            await show_folder_contents(message, state, path)
+        return
+
+    await message.answer("❌ Ошибка")
+
+@dp.message(AdminStates.choosing_delete)
+async def admin_choosing_delete(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+
+    if message.text == "🔙 Артқа":
+        data_state = await state.get_data()
+        path = data_state.get("current_path", [])
+        if path:
+            await show_folder_contents(message, state, path)
+        else:
+            await admin_menu(message, state)
+        return
+
+    data_state = await state.get_data()
+    action = data_state.get("action", "")
+    path = data_state.get("current_path", [])
+    target = message.text
+
+    data = admin.load_materials()
+
+    if action == "delete_root":
+        roots = admin.get_root_folders()
+        root_key = None
+        for key, root_data in roots.items():
+            if root_data.get("label") == target:
+                root_key = key
+                break
+        if root_key and admin.delete_root_folder(root_key):
+            await message.answer(f"✅ Удалено!")
+            await admin_menu(message, state)
+        else:
+            await message.answer("❌ Ошибка")
+            await admin_menu(message, state)
+        return
+
+    if action == "delete_in_folder":
+        node = admin.get_node_by_path(data, path)
+        if node is None:
+            await message.answer("❌ Ошибка")
+            return
+
+        found = False
+
+        for key in list(node.keys()):
+            if key not in ("label", "type", "file_id", "items", "links", "title"):
+                if isinstance(node[key], dict) and node[key].get("label") == target:
+                    del node[key]
+                    found = True
+                    break
+
+        if not found and node.get("type") == "list":
+            for i, item in enumerate(node.get("items", [])):
+                if item.get("label") == target or item.get("label") == target.replace("📋 ", ""):
+                    node["items"].pop(i)
+                    found = True
+                    break
+
+        if found:
+            admin.save_materials(data)
+            await message.answer(f"✅ Удалено!")
+            await show_folder_contents(message, state, path)
+        else:
+            await message.answer("❌ Ошибка")
+            await show_folder_contents(message, state, path)
+        return
+
+    await message.answer("❌ Ошибка")
 
 @dp.message(F.text == "📊 Статистика")
 async def show_stats(message: Message):
@@ -284,205 +576,20 @@ async def show_stats(message: Message):
         f"🔥 Топ-5 батырмалар:\n{top_text}"
     )
 
-    await message.answer(text, reply_markup=admin_keyboard)
-
-
-# ════════════════════════════════════════════════════════════════════════════════
-# АДМИНКА: ➕ Материал қосу (теперь пишет прямо в materials.json)
-# ════════════════════════════════════════════════════════════════════════════════
-
-@dp.message(F.text == "➕ Материал қосу")
-async def add_material(message: Message, state: FSMContext):
-    if message.from_user.id != ADMIN_ID:
-        return
-
-    data = mat.load_materials()
-    paths = mat.collect_subject_paths(data)
-    await state.update_data(admin_paths=paths)
-
-    rows = [[KeyboardButton(text=label)] for _, label in paths]
-    rows.append([KeyboardButton(text="🔙 Артқа")])
-    keyboard = ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
-
-    await message.answer("Қай бөлімге материал қосамыз?", reply_markup=keyboard)
-    await state.set_state(AdminStates.waiting_for_path)
-
-
-@dp.message(AdminStates.waiting_for_path)
-async def select_path(message: Message, state: FSMContext):
-    if message.from_user.id != ADMIN_ID:
-        return
-
-    if message.text == "🔙 Артқа":
-        await message.answer("📊 Админ панель ашылды:", reply_markup=admin_keyboard)
-        await state.clear()
-        return
-
-    data = await state.get_data()
-    paths = data.get("admin_paths", [])
-    selected = next((p for p, label in paths if label == message.text), None)
-
-    if selected is None:
-        await message.answer("❌ Белгісіз бөлім. Тізімнен таңдаңыз:")
-        return
-
-    await state.update_data(target_path=selected)
-    await message.answer("Материалдың атын жазыңыз (мысалы: 'Лекция 1 - Алгебра'):")
-    await state.set_state(AdminStates.waiting_for_material_name)
-
-
-@dp.message(AdminStates.waiting_for_material_name)
-async def input_material_name(message: Message, state: FSMContext):
-    if message.from_user.id != ADMIN_ID:
-        return
-
-    await state.update_data(material_name=message.text)
-    await message.answer("Енді файлды жіберіңіз (PDF, видео, құжат және т.б.):")
-    await state.set_state(AdminStates.waiting_for_file)
-
-
-@dp.message(AdminStates.waiting_for_file)
-async def receive_file(message: Message, state: FSMContext):
-    if message.from_user.id != ADMIN_ID:
-        return
-
-    if not message.document and not message.video and not message.audio and not message.photo:
-        await message.answer("❌ Файлды жіберіңіз (PDF, видео, фото және т.б.)")
-        return
-
-    if message.document:
-        file_id = message.document.file_id
-        file_type = "document"
-    elif message.video:
-        file_id = message.video.file_id
-        file_type = "video"
-    elif message.audio:
-        file_id = message.audio.file_id
-        file_type = "audio"
-    else:
-        file_id = message.photo[-1].file_id
-        file_type = "photo"
-
-    data = await state.get_data()
-    target_path = data.get("target_path")
-    material_name = data.get("material_name")
-
-    full_data = mat.load_materials()
-    node = mat.get_node(full_data, target_path)
-    node_type = node.get("type") if node else None
-
-    if node_type == "single":
-        ok = mat.set_single(full_data, target_path, file_id)
-    else:
-        ok = mat.add_item_to_list(full_data, target_path, material_name, file_id)
-
-    if ok:
-        mat.save_materials(full_data)
-        status_line = "✅ materials.json-ге сақталды!"
-        try:
-            commit_sha = github_sync.commit_materials_json("materials.json", material_name)
-            status_line += f"\n🚀 GitHub-ке жіберілді (commit {commit_sha}). Render автодеплой бастайды (~1-2 мин)."
-        except github_sync.GithubCommitError as e:
-            status_line += f"\n⚠️ GitHub-ке жіберу мүмкін болмады: {e}\n(materials.json локалда сақталды, бірақ келесі деплойда жоғалуы мүмкін!)"
-        except Exception as e:
-            status_line += f"\n⚠️ Күтпеген қате GitHub-пен байланыста: {e}"
-    else:
-        status_line = "⚠️ Бөлім табылмады, materials.json-ге сақталмады."
-
-    text = (
-        f"{status_line}\n\n"
-        f"Бөлім: {' → '.join(target_path)}\n"
-        f"Есімі: {material_name}\n"
-        f"Түрі: {file_type}\n\n"
-        f"📋 File ID:\n`{file_id}`"
-    )
-
-    await message.answer(text, parse_mode="Markdown", reply_markup=admin_keyboard)
-    await state.clear()
-
-
-# ════════════════════════════════════════════════════════════════════════════════
-# ОБЩАЯ КНОПКА "АРТҚА" (контекстная — зависит от состояния навигации)
-# ════════════════════════════════════════════════════════════════════════════════
-
-@dp.message(F.text == "🔙 Артқа", NavStates.browsing)
-async def back_inside_tree(message: Message, state: FSMContext):
-    data = await state.get_data()
-    current_path = data.get("path", [])
-    target = parent_path(current_path)
-
-    if not target:
-        await state.clear()
-        await message.answer("Қажетті бөлімді таңдаңыз😊:", reply_markup=main_keyboard)
-        return
-
-    await render_node(message, state, target)
-
+    await message.answer(text, reply_markup=admin_main_keyboard)
 
 @dp.message(F.text == "🔙 Артқа")
-async def back_default(message: Message, state: FSMContext):
+async def back_to_main(message: Message, state: FSMContext):
     await state.clear()
     await message.answer("Қажетті бөлімді таңдаңыз😊:", reply_markup=main_keyboard)
-
-
-# ════════════════════════════════════════════════════════════════════════════════
-# ВХОД В КОРНЕВЫЕ РАЗДЕЛЫ (📐 Математика / 💻 Информатика / ⚛️ Физика / Саған қажетті заттар😉)
-# ════════════════════════════════════════════════════════════════════════════════
-
-@dp.message(F.text.in_(ROOT_BUTTONS.keys()))
-async def open_root_section(message: Message, state: FSMContext):
-    user_id = message.from_user.id
-    first_name = message.from_user.first_name or "Қолданушы"
-    track(user_id, first_name, message.text)
-
-    path = ROOT_BUTTONS[message.text]
-    await render_node(message, state, path)
-
-
-# ════════════════════════════════════════════════════════════════════════════════
-# НАВИГАЦИЯ ВНУТРИ ДЕРЕВА (любой клик, когда мы в состоянии browsing)
-# ════════════════════════════════════════════════════════════════════════════════
-
-@dp.message(NavStates.browsing)
-async def navigate_tree(message: Message, state: FSMContext):
-    data = await state.get_data()
-    current_path = data.get("path", [])
-    clicked = message.text
-
-    full_data = mat.load_materials()
-    current_node = mat.get_node(full_data, current_path)
-
-    if current_node and current_node.get("type") == "list":
-        handled = await handle_list_item_click(message, state, current_path, clicked)
-        if handled:
-            return
-        await message.answer("Төмендегі батырмалар арқылы таңдаңыз 👇")
-        return
-
-    children = mat.list_children(current_node) or {}
-    for key, child in children.items():
-        child_label = child.get("label", key)
-        if clicked in (child_label, f"⏳ {child_label}"):
-            track(message.from_user.id, message.from_user.first_name or "Қолданушы", child_label)
-            await render_node(message, state, current_path + [key])
-            return
-
-    await message.answer("Төмендегі батырмалар арқылы таңдаңыз 👇")
-
-
-# ════════════════════════════════════════════════════════════════════════════════
-# FALLBACK
-# ════════════════════════════════════════════════════════════════════════════════
 
 @dp.message()
 async def other(message: Message, state: FSMContext):
     await state.clear()
     await message.answer("Төмендегі батырмалар арқылы таңдаңыз 👇", reply_markup=main_keyboard)
 
-
 async def main():
     await dp.start_polling(bot)
-
 
 if __name__ == "__main__":
     asyncio.run(main())
