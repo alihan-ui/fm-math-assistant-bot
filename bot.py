@@ -24,19 +24,26 @@ dp = Dispatcher()
 
 BACK_LABEL = "🔙 Артқа"
 
+# ════════════════════════════════════════════════════════════════════════════════
+# СОСТОЯНИЯ (FSM)
+# ════════════════════════════════════════════════════════════════════════════════
+
 class NavStates(StatesGroup):
     browsing = State()
 
 class AdminStates(StatesGroup):
     choosing_root = State()
     in_folder = State()
-    choosing_action = State()
     input_folder_name = State()
     input_material_name = State()
     waiting_file = State()
     choosing_rename = State()
     input_new_name = State()
     choosing_delete = State()
+
+# ════════════════════════════════════════════════════════════════════════════════
+# СТАТИСТИКА
+# ════════════════════════════════════════════════════════════════════════════════
 
 def load_stats():
     if not os.path.exists(STATS_FILE):
@@ -74,6 +81,25 @@ def track(user_id: int, first_name: str, button: str = None):
 
     save_stats(stats)
 
+# ════════════════════════════════════════════════════════════════════════════════
+# ОТПРАВКА МАТЕРИАЛОВ
+# ════════════════════════════════════════════════════════════════════════════════
+
+async def send_material(message: Message, file_id: str):
+    await message.answer_document(file_id)
+    await message.answer(
+        "Үздік нәтиже сізді күтеді 🏆\n\n"
+        "Дайындықты жалғастырамыс ба? 😇"
+    )
+
+async def send_links(message: Message, title: str, links: list[str]):
+    numbered = "\n\n".join(f"{i+1}️⃣ {link}" for i, link in enumerate(links))
+    await message.answer(f"{title}\n\n{numbered}")
+
+# ════════════════════════════════════════════════════════════════════════════════
+# КЛАВИАТУРЫ
+# ════════════════════════════════════════════════════════════════════════════════
+
 main_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="📐 Математика")],
@@ -92,6 +118,113 @@ admin_main_keyboard = ReplyKeyboardMarkup(
     ],
     resize_keyboard=True
 )
+
+ROOT_BUTTONS = {
+    "📐 Математика": ["math"],
+    "💻 Информатика": ["informatics"],
+    "⚛️ Физика": ["physics"],
+    "Саған қажетті заттар😉": ["proforientation"],
+}
+
+# ════════════════════════════════════════════════════════════════════════════════
+# ПОЛЬЗОВАТЕЛЬСКАЯ НАВИГАЦИЯ
+# ════════════════════════════════════════════════════════════════════════════════
+
+def build_keyboard_for_node(node: dict) -> ReplyKeyboardMarkup:
+    """Строит клавиатуру из дочерних узлов текущего узла"""
+    children = mat.list_children(node) or {}
+    rows = []
+    for key, child in children.items():
+        label = child.get("label", key)
+        rows.append([KeyboardButton(text=label)])
+    rows.append([KeyboardButton(text=BACK_LABEL)])
+    return ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
+
+def build_list_keyboard(node: dict) -> ReplyKeyboardMarkup:
+    """Строит клавиатуру для узла с материалами"""
+    items = node.get("items", [])
+    rows = [[KeyboardButton(text=item["label"])] for item in items]
+    if not items:
+        rows.append([KeyboardButton(text="⏳ Әзірге материал жоқ")])
+    rows.append([KeyboardButton(text=BACK_LABEL)])
+    return ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
+
+async def render_node(message: Message, state: FSMContext, path: list[str]):
+    """Отображает узел дерева"""
+    data = mat.load_materials()
+    node = mat.get_node(data, path)
+
+    if node is None:
+        await message.answer("⏳ Бөлім табылмады, басты мәзірге оралыңыз.", reply_markup=main_keyboard)
+        await state.clear()
+        return
+
+    node_type = node.get("type")
+    node_label = node.get("label", "?")
+
+    if node_type == "coming_soon":
+        await message.answer("⏳ Жақында қосылады!")
+        return
+
+    if node_type == "single":
+        file_id = node.get("file_id")
+        if file_id:
+            await send_material(message, file_id)
+        else:
+            await message.answer("⏳ Материал жақында қосылады!")
+        return
+
+    if node_type == "list":
+        await state.update_data(path=path)
+        await state.set_state(NavStates.browsing)
+        await message.answer(
+            f"{node_label} бөлімін таңдаңыз😊:",
+            reply_markup=build_list_keyboard(node)
+        )
+        return
+
+    children = mat.list_children(node)
+    if children:
+        await state.update_data(path=path)
+        await state.set_state(NavStates.browsing)
+        await message.answer(
+            f"{node_label} бөлімін таңдаңыз:",
+            reply_markup=build_keyboard_for_node(node)
+        )
+        return
+
+    await message.answer("⏳ Материал табылмады")
+
+async def handle_list_item_click(message: Message, state: FSMContext, path: list[str], clicked_label: str) -> bool:
+    """Обработка клика на материал в списке"""
+    data = mat.load_materials()
+    node = mat.get_node(data, path)
+    if not node or node.get("type") != "list":
+        return False
+
+    for item in node.get("items", []):
+        if item.get("label") == clicked_label:
+            track(message.from_user.id, message.from_user.first_name or "Қолданушы", clicked_label)
+            if item.get("type") == "links":
+                await send_links(message, item.get("title", clicked_label), item.get("links", []))
+            else:
+                file_id = item.get("file_id")
+                if file_id:
+                    await send_material(message, file_id)
+                else:
+                    await message.answer("⏳ Материал жақында қосылады!")
+            return True
+    return False
+
+def parent_path(path: list[str]) -> list[str]:
+    """Путь родителя"""
+    if len(path) <= 1:
+        return []
+    return path[:-1]
+
+# ════════════════════════════════════════════════════════════════════════════════
+# КОМАНДЫ
+# ════════════════════════════════════════════════════════════════════════════════
 
 @dp.message(CommandStart())
 async def start(message: Message, state: FSMContext):
@@ -121,9 +254,7 @@ async def admin_menu(message: Message, state: FSMContext):
     if message.from_user.id != ADMIN_ID:
         return
 
-    data = admin.load_materials()
     roots = admin.get_root_folders()
-    
     rows = [[KeyboardButton(text=f"{root_data.get('label', key)}")] for key, root_data in roots.items()]
     rows.append([KeyboardButton(text="➕ Добавить раздел")])
     rows.append([KeyboardButton(text="🔄 Переименовать раздел")])
@@ -173,7 +304,6 @@ async def admin_choose_root(message: Message, state: FSMContext):
         await state.update_data(action="delete_root", path=[])
         return
 
-    data = admin.load_materials()
     roots = await state.get_data()
     roots = roots.get("root_folders", {})
     
@@ -242,7 +372,7 @@ async def show_folder_contents(message: Message, state: FSMContext, path: list[s
         current_node_type=node_type
     )
 
-@dp.message(AdminStates.in_folder)
+@dp.message(F.text == "in_folder")
 async def admin_in_folder(message: Message, state: FSMContext):
     if message.from_user.id != ADMIN_ID:
         return
@@ -330,7 +460,6 @@ async def admin_input_folder_name(message: Message, state: FSMContext):
     if action == "add_root":
         folder_key = folder_name.lower().replace(" ", "_")
         if admin.add_root_folder(folder_key, folder_name):
-            admin.save_materials(admin.load_materials())
             await message.answer(f"✅ Раздел '{folder_name}' қосылды!")
             await admin_menu(message, state)
         else:
@@ -370,17 +499,12 @@ async def admin_waiting_file(message: Message, state: FSMContext):
         return
 
     file_id = None
-    file_type = "unknown"
-    
     if message.document:
         file_id = message.document.file_id
-        file_type = "document"
     elif message.video:
         file_id = message.video.file_id
-        file_type = "video"
     elif message.audio:
         file_id = message.audio.file_id
-        file_type = "audio"
 
     data_state = await state.get_data()
     path = data_state.get("current_path", [])
@@ -455,10 +579,9 @@ async def admin_input_new_name(message: Message, state: FSMContext):
             await message.answer("❌ Ошибка")
             return
 
-        children = node
         found = False
 
-        for key, child in list(children.items()):
+        for key, child in list(node.items()):
             if key not in ("label", "type", "file_id", "items", "links", "title"):
                 if isinstance(child, dict) and child.get("label") == old_label:
                     child["label"] = new_label
@@ -577,6 +700,54 @@ async def show_stats(message: Message):
     )
 
     await message.answer(text, reply_markup=admin_main_keyboard)
+
+@dp.message(F.text.in_(ROOT_BUTTONS.keys()))
+async def open_root_section(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    first_name = message.from_user.first_name or "Қолданушы"
+    track(user_id, first_name, message.text)
+
+    path = ROOT_BUTTONS[message.text]
+    await render_node(message, state, path)
+
+@dp.message(F.text == "🔙 Артқа", NavStates.browsing)
+async def back_inside_tree(message: Message, state: FSMContext):
+    data = await state.get_data()
+    current_path = data.get("path", [])
+    target = parent_path(current_path)
+
+    if not target:
+        await state.clear()
+        await message.answer("Қажетті бөлімді таңдаңыз😊:", reply_markup=main_keyboard)
+        return
+
+    await render_node(message, state, target)
+
+@dp.message(NavStates.browsing)
+async def navigate_tree(message: Message, state: FSMContext):
+    data = await state.get_data()
+    current_path = data.get("path", [])
+    clicked = message.text
+
+    full_data = mat.load_materials()
+    current_node = mat.get_node(full_data, current_path)
+
+    if current_node and current_node.get("type") == "list":
+        handled = await handle_list_item_click(message, state, current_path, clicked)
+        if handled:
+            return
+        await message.answer("Төмендегі батырмалар арқылы таңдаңыз 👇")
+        return
+
+    children = mat.list_children(current_node) or {}
+    for key, child in children.items():
+        child_label = child.get("label", key)
+        if clicked == child_label:
+            track(message.from_user.id, message.from_user.first_name or "Қолданушы", child_label)
+            await render_node(message, state, current_path + [key])
+            return
+
+    await message.answer("Төмендегі батырмалар арқылы таңдаңыз 👇")
 
 @dp.message(F.text == "🔙 Артқа")
 async def back_to_main(message: Message, state: FSMContext):
