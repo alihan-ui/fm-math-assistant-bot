@@ -2,7 +2,7 @@ import asyncio
 import json
 import os
 from datetime import datetime, date
-from aiogram import Bot, Dispatcher, F
+from aiogram import Bot, Dispatcher, F, Router
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
@@ -23,6 +23,11 @@ dp = Dispatcher()
 
 BACK_LABEL = "🔙 Артқа"
 
+# ===== QUICK UPLOAD STATES =====
+class QuickUploadState(StatesGroup):
+    waiting_pdf = State()
+
+# ===== REGULAR STATES =====
 class NavStates(StatesGroup):
     browsing = State()
 
@@ -84,6 +89,7 @@ main_keyboard = ReplyKeyboardMarkup(keyboard=[
 admin_main_keyboard = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text="📊 Статистика")],
     [KeyboardButton(text="⚙️ Админка")],
+    [KeyboardButton(text="📄 Быстрая загрузка PDF")],
     [KeyboardButton(text="🔙 Артқа")],
 ], resize_keyboard=True)
 
@@ -172,6 +178,48 @@ def parent_path(path: list) -> list:
         return []
     return path[:-1]
 
+# ===== QUICK UPLOAD HANDLERS =====
+@dp.message(F.text == "📄 Быстрая загрузка PDF")
+async def quick_upload_start(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+    await state.set_state(QuickUploadState.waiting_pdf)
+    await message.answer("📄 Отправь PDF файл (БЕЗ ВОПРОСОВ выплевываю file_id):\n\n/cancel - отмена")
+
+@dp.message(QuickUploadState.waiting_pdf, F.text == "/cancel")
+async def quick_upload_cancel(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer("❌ Отменено", reply_markup=admin_main_keyboard)
+
+@dp.message(QuickUploadState.waiting_pdf)
+async def quick_upload_pdf(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+    
+    if not message.document:
+        await message.answer("❌ Это не файл! Отправь PDF!")
+        return
+    
+    file_id = message.document.file_id
+    filename = message.document.file_name or "file"
+    
+    response = f"""✅ **FILE_ID ПОЛУЧЕН!**
+
+📝 Файл: `{filename}`
+🔑 FILE_ID:
+`{file_id}`
+
+**Копируй и вставляй в materials.json!**"""
+    
+    await message.answer(response, parse_mode="Markdown")
+    await message.answer("📄 Отправь следующий PDF или /done для выхода")
+
+@dp.message(QuickUploadState.waiting_pdf, Command("done"))
+async def quick_upload_done(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer("✅ Готово!", reply_markup=admin_main_keyboard)
+
+# ===== REST OF BOT CODE =====
 @dp.message(CommandStart())
 async def start(message: Message, state: FSMContext):
     user_id = message.from_user.id
