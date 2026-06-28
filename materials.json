@@ -104,6 +104,44 @@
             {"label": "1️⃣ Информатика 1-нұсқа", "file_id": "BQACAgIAAxkBAAJH82o3wHGcNpH2i2k_W0byeijrrsToAAItnQACdm_BSd4Qku2ir1arPAQ"},
             {"label": "2️⃣ Информатика 2-нұсқа", "file_id": "BQACAgIAAxkBAAJIH2o3wPkzL3j8xGyREAl9T-PlAmMvAAIxnQACdm_BSf8JUMqsiG99PAQ"}
           ]
+        },
+        "practice": {
+          "label": "💻 Практика жасауға арналған тапсырмалар",
+          "type": "list",
+          "items": [
+            {"label": "1️⃣ 50 PYTHON тапсырма A,B деңгей", "file_id": "BQACAgIAAxkBAAJYLmpBT_i0Zvn2bKKeO_XCtKo2FglNAAKooQACrSoJSgyDbIusqa6NPAQ"},
+            {"label": "2️⃣ WEB-ЖОБАЛАУ 50 ТЕСТ", "file_id": "BQACAgIAAxkBAAJYLGpBT_hp7m0jMk9ALmPznhm8whhsAAKmoQACrSoJSgkTxHrHAAFcOjwE"},
+            {"label": "3️⃣ PYTHON C ДЕҢГЕЙ 50 ТАПСЫРМА", "file_id": "BQACAgIAAxkBAAJYLWpBT_hrurajng0CJs-bgPTcWamXAAKnoQACrSoJSviBGTQAAT1kBzwE"}
+          ]
+        }
+      },
+      "theory": {
+        "label": "📖 Теориялық базалар",
+        "python": {
+          "label": "🐍 Python",
+          "type": "list",
+          "items": [
+            {"label": "PYTHON 7-сынып", "file_id": "BQACAgIAAxkBAAJYS2pBUmmjKLH5xUf7tHoecsJJPgABIwACv6EAAq0qCUqcT9zULB5nOzwE"},
+            {"label": "PYTHON 8-сынып", "file_id": "BQACAgIAAxkBAAJYSmpBUmlhjnDFtm1zOgKkHEYLjaiBAAK-oQACrSoJSk1CUVdjBL3jPAQ"},
+            {"label": "PYTHON 9-сынып", "file_id": "BQACAgIAAxkBAAJYSWpBUmlBw87h_YJsmtEGXvS72rt0AAK9oQACrSoJSq5HqveiB6RCPAQ"},
+            {"label": "PYTHON 10-сынып", "file_id": "BQACAgIAAxkBAAJYSGpBUmm98UjzGfW_qPTmX1otPnVJAAK8oQACrSoJSjc9O2_yomjaPAQ"}
+          ]
+        },
+        "other_theory": {
+          "label": "Басқа теория",
+          "type": "list",
+          "items": [
+            {"label": "1️⃣ UNICODE and ASCII", "file_id": "BQACAgIAAxkBAAJYR2pBUmlib-s06zhgulSz4lO9Kv6BAAK7oQACrSoJSk7dv55V77B-PAQ"},
+            {"label": "2️⃣ IP.DNS", "file_id": "BQACAgIAAxkBAAJYTGpBUmlfcqsbTZozQKxnKFFgJeRpAALAoQACrSoJSvj0VokKyxYTPAQ"},
+            {"label": "3️⃣ Мәліметтер қоры", "file_id": "BQACAgIAAxkBAAJYT2pBUmmIcG4jP0sYbi92JZxPvjQeAALDoQACrSoJSpOjWgpTLciPPAQ"},
+            {"label": "4️⃣ HTML", "file_id": "BQACAgIAAxkBAAJYTWpBUmkBb-qHLjunJC3yaFIzqC5xAALBoQACrSoJSh5YBqbEqdUHPAQ"},
+            {"label": "5️⃣ Санау жүйелері", "file_id": "BQACAgIAAxkBAAJYTmpBUmnriwy5lxokBVPRz4mL6VGRAALCoQACrSoJSutVHhRB2BFvPAQ"},
+            {"label": "6️⃣ Қиналатын сұрақтар (теория)", "file_id": "BQACAgIAAxkBAAJYUGpBUmmdO4l4cUhz_6yuaZAbI6H9AALEoQACrSoJSg9Se-k5GJ6EPAQ"},
+            {"label": "7️⃣ Комп.жад + құрылғылар", "file_id": "BQACAgIAAxkBAAJYZmpBUm05KjSsNkAKoCqL2C2vVxIVAALGoQACrSoJSgkv9KldJ4BxPAQ"},
+            {"label": "8️⃣ Компьютер желілерді жіктеу", "file_id": "BQACAgIAAxkBAAJYZWpBUm11b0vVco16O-gJUi6OVObRAALFoQACrSoJSi1pyqX3otkwPAQ"},
+            {"label": "9️⃣ Деректер қоры", "file_id": "BQACAgIAAxkBAAJYZ2pBUm3fikLxLZHAWhUWvRSHXTaTAALHoQACrSoJSo50sDM6_BhCPAQ"},
+            {"label": "🔟 Bigdata", "file_id": "BQACAgIAAxkBAAJYaGpBUm0lTEGd9QFMOwos1ZeSrJobAALIoQACrSoJSqDvWUNrl7xgPAQ"}
+          ]
         }
       },
       "checklists": {
