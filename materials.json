@@ -122,8 +122,8 @@
       },
       "specs": {
         "label": "📄 Спецификация",
-        "type": "list",
-        "items": []
+        "type": "single",
+        "file_id": "BQACAgIAAxkBAAJYJ2pBTnbEpfRQuF48iIbydcwPp5boAAKXoQACrSoJSnBES9MAATBEVjwE"
       }
     },
     "physics": {
