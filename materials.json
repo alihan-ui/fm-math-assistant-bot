@@ -117,7 +117,7 @@
       },
       "theory": {
         "label": "📖 Теориялық базалар",
-        "python": {
+        "python_section": {
           "label": "🐍 Python",
           "type": "list",
           "items": [
@@ -127,7 +127,7 @@
             {"label": "PYTHON 10-сынып", "file_id": "BQACAgIAAxkBAAJYSGpBUmm98UjzGfW_qPTmX1otPnVJAAK8oQACrSoJSjc9O2_yomjaPAQ"}
           ]
         },
-        "other_theory": {
+        "other_section": {
           "label": "Басқа теория",
           "type": "list",
           "items": [
