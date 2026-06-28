@@ -57,6 +57,21 @@
           {"label": "Тақырыптық талдаулар", "type": "links", "title": "🎥 Тақырыптық талдаулар (Информатика)", "links": ["https://www.youtube.com/live/wHGtPQI7uO4?si=VS2cNtrDhxDGAvyu", "https://www.youtube.com/live/4X3qeVjdZo4?si=w8gbf8iOFk5yjDVs", "https://www.youtube.com/live/yIWe32DF2Fw?si=jIyH-ANQLAvT1CmF", "https://www.youtube.com/live/w7RNWSTLzlg?si=LWerSVKGuDT8L_Sw", "https://www.youtube.com/live/TdtVoi4D7tA?si=zfOOndihhjwowYHe", "https://www.youtube.com/live/sWqgV1lj3so?si=ydRyeeocHArqfsdB"]}
         ]
       },
+      "quiz": {
+        "label": "❓ Теория курсы бойынша QUIZ",
+        "type": "links",
+        "title": "❓ Теория курсы бойынша QUIZ",
+        "links": [
+          "https://wayground.com/join?gc=30801865",
+          "https://wayground.com/join?gc=21200841",
+          "https://wayground.com/join?gc=03112905",
+          "https://wayground.com/join?gc=51445705",
+          "https://wayground.com/join?gc=57475017",
+          "https://wayground.com/join?gc=47382473",
+          "https://wayground.com/join?gc=15400905",
+          "https://wayground.com/join?gc=10944457"
+        ]
+      },
       "books": {
         "label": "📚 Кітаптар",
         "all_pages": {
