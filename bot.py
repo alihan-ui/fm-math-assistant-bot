@@ -190,16 +190,17 @@ async def quick_upload_cancel(message: Message, state: FSMContext):
     await state.clear()
     await message.answer("❌ Отменено", reply_markup=admin_main_keyboard)
 
-@dp.message(QuickUploadState.waiting_pdf)
+@dp.message(QuickUploadState.waiting_pdf, F.document)
 async def quick_upload_pdf(message: Message, state: FSMContext):
     if message.from_user.id != ADMIN_ID:
         await state.clear()
         return
     
-    if not message.document:
-        await message.answer("❌ Отправь PDF!")
-        return
+    file_id = message.document.file_id
+    filename = message.document.file_name or "file"
     
+    await message.answer(f"✅ FILE_ID\n\n📄 {filename}\n\n{file_id}")
+    await message.answer("📄 Еще PDF или /done")
     file_id = message.document.file_id
     filename = message.document.file_name or "file"
     
