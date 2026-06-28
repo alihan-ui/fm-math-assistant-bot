@@ -710,6 +710,13 @@ async def navigate_tree(message: Message, state: FSMContext):
         if clicked == child_label:
             track(message.from_user.id, message.from_user.first_name or "Қолданушы", child_label)
             
+            # 🔥 Если это QUIZ или другой раздел с type "links" - отправляем ссылки!
+            if child.get("type") == "links":
+                title = child.get("title", child_label)
+                links = child.get("links", [])
+                await send_links(message, title, links)
+                return
+            
             # 🔥 ИСПРАВЛЕНИЕ: Если это класс (class_7, class_8, и т.д.) - отправить все PDF сразу одно сообщение!
             if key.startswith("class_"):
                 node = mat.get_node(full_data, current_path + [key])
