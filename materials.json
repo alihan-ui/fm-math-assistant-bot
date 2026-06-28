@@ -6,32 +6,16 @@
         "label": "📖 Формула жинақтары",
         "type": "list",
         "items": [
-          {
-            "label": "FM толық формула жинағы",
-            "file_id": "BQACAgIAAxkBAAMhaivum6YUu_w_GDko4M6PzVnr3XoAAlqXAAKtAmBJEyCe1dt5fMw8BA"
-          },
-          {
-            "label": "Геометрия формулалары",
-            "file_id": "BQACAgIAAxkBAAMvaivxMhJUprEoBPd54ZBRfF7X8AwAAoGXAAKtAmBJvfap8uuCIYQ8BA"
-          }
+          {"label": "FM толық формула жинағы", "file_id": "BQACAgIAAxkBAAMhaivum6YUu_w_GDko4M6PzVnr3XoAAlqXAAKtAmBJEyCe1dt5fMw8BA"},
+          {"label": "Геометрия формулалары", "file_id": "BQACAgIAAxkBAAMvaivxMhJUprEoBPd54ZBRfF7X8AwAAoGXAAKtAmBJvfap8uuCIYQ8BA"}
         ]
       },
       "streams": {
         "label": "🎥 Эфирлер",
         "type": "list",
         "items": [
-          {
-            "label": "Нұсқа талдаулар",
-            "type": "links",
-            "title": "📝 Нұсқа талдаулар (Математика)",
-            "links": ["https://www.youtube.com/live/X8E_LKEvCQQ", "https://www.youtube.com/live/Hr_Lcc8SDrA", "https://www.youtube.com/live/qszjXWW-kzg", "https://www.youtube.com/live/RBI30Sl7znE", "https://www.youtube.com/live/dT0Zusf1q58", "https://www.youtube.com/live/GToZYK7EGqQ", "https://youtu.be/J4u4xVYWTKk", "https://www.youtube.com/live/WX3s4lVT_Do", "https://www.youtube.com/live/fCnZPZ1Rw7w", "https://www.youtube.com/live/W5PhjoWd77c", "https://www.youtube.com/live/dpzWNqCqL8k"]
-          },
-          {
-            "label": "12 сағаттық эфирлер",
-            "type": "links",
-            "title": "🎥 12 сағаттық эфирлер (Математика)",
-            "links": ["https://www.youtube.com/live/5ZJyxKkKKM0", "https://www.youtube.com/live/8g4nBZuqSyg", "https://www.youtube.com/live/LQI2qCXN2R4", "https://www.youtube.com/live/4JrjVvrqA6Y", "https://www.youtube.com/live/v4ViVRkwfPM", "https://www.youtube.com/live/Py9KJ88uvQs", "https://www.youtube.com/live/AEaxkQJ9C_E", "https://www.youtube.com/live/7iWfTWMcnZY", "https://www.youtube.com/live/W2vAd0WphBo", "https://www.youtube.com/live/D4R6tUm40LU"]
-          }
+          {"label": "Нұсқа талдаулар", "type": "links", "title": "📝 Нұсқа талдаулар (Математика)", "links": ["https://www.youtube.com/live/X8E_LKEvCQQ", "https://www.youtube.com/live/Hr_Lcc8SDrA", "https://www.youtube.com/live/qszjXWW-kzg", "https://www.youtube.com/live/RBI30Sl7znE", "https://www.youtube.com/live/dT0Zusf1q58", "https://www.youtube.com/live/GToZYK7EGqQ", "https://youtu.be/J4u4xVYWTKk", "https://www.youtube.com/live/WX3s4lVT_Do", "https://www.youtube.com/live/fCnZPZ1Rw7w", "https://www.youtube.com/live/W5PhjoWd77c", "https://www.youtube.com/live/dpzWNqCqL8k"]},
+          {"label": "12 сағаттық эфирлер", "type": "links", "title": "🎥 12 сағаттық эфирлер (Математика)", "links": ["https://www.youtube.com/live/5ZJyxKkKKM0", "https://www.youtube.com/live/8g4nBZuqSyg", "https://www.youtube.com/live/LQI2qCXN2R4", "https://www.youtube.com/live/4JrjVvrqA6Y", "https://www.youtube.com/live/v4ViVRkwfPM", "https://www.youtube.com/live/Py9KJ88uvQs", "https://www.youtube.com/live/AEaxkQJ9C_E", "https://www.youtube.com/live/7iWfTWMcnZY", "https://www.youtube.com/live/W2vAd0WphBo", "https://www.youtube.com/live/D4R6tUm40LU"]}
         ]
       },
       "checklists": {
@@ -58,9 +42,9 @@
         ]
       },
       "specs": {
-        "label": "📄 Спецификациялар",
+        "label": "📄 Спецификация",
         "type": "single",
-        "file_id": "BQACAgIAAxkBAAMNaivoYkVdTqn3-P_QtMVa_X52eNQAAvGWAAKtAmBJ1jlXPyhYHjU8BA"
+        "file_id": "BQACAgIAAxkBAAMNai"
       }
     },
     "informatics": {
@@ -69,13 +53,47 @@
         "label": "🎥 Эфирлер",
         "type": "list",
         "items": [
-          {
-            "label": "Тақырыптық талдаулар",
-            "type": "links",
-            "title": "🎥 Тақырыптық талдаулар (Информатика)",
-            "links": ["https://www.youtube.com/live/wHGtPQI7uO4?si=VS2cNtrDhxDGAvyu", "https://www.youtube.com/live/4X3qeVjdZo4?si=w8gbf8iOFk5yjDVs", "https://www.youtube.com/live/yIWe32DF2Fw?si=jIyH-ANQLAvT1CmF", "https://www.youtube.com/live/w7RNWSTLzlg?si=LWerSVKGuDT8L_Sw", "https://www.youtube.com/live/TdtVoi4D7tA?si=zfOOndihhjwowYHe", "https://www.youtube.com/live/sWqgV1lj3so?si=ydRyeeocHArqfsdB"]
-          }
+          {"label": "Нұсқа талдаулар", "type": "links", "title": "🎥 Нұсқа талдаулар (Информатика)", "links": ["https://www.youtube.com/live/5BgNxwd6I-4?si=JCfN451J8D2VCvZf", "https://www.youtube.com/live/vIQnH3laLwY?si=Zt1zAYpBJhPe7Hhz", "https://www.youtube.com/live/7Rt_RBQecXw?si=D6LbIjrPoAXE2mEA", "https://www.youtube.com/live/6JAUspNjYfk?si=0g_WYoEqXcwVv2SV", "https://www.youtube.com/live/MtLzvYHwPtc?si=bxQREB3iC7pz6pNp", "https://www.youtube.com/live/ohr3p0K13bs?si=ZIdIWolAbh_zYfcF", "https://www.youtube.com/live/gq_LTNd-IvI?si=9tg5z6OOZnSnhWZn", "https://www.youtube.com/live/GJT2UJVRCSM?si=wZ1WLo24hq-sk2fI", "https://www.youtube.com/live/SD4jw2Nj_l4?si=pkcBHs7Jml0pJxOL", "https://www.youtube.com/live/JIh6ooQdZzs?si=x4f4LxLAuMnBfk6Q"]},
+          {"label": "Тақырыптық талдаулар", "type": "links", "title": "🎥 Тақырыптық талдаулар (Информатика)", "links": ["https://www.youtube.com/live/wHGtPQI7uO4?si=VS2cNtrDhxDGAvyu", "https://www.youtube.com/live/4X3qeVjdZo4?si=w8gbf8iOFk5yjDVs", "https://www.youtube.com/live/yIWe32DF2Fw?si=jIyH-ANQLAvT1CmF", "https://www.youtube.com/live/w7RNWSTLzlg?si=LWerSVKGuDT8L_Sw", "https://www.youtube.com/live/TdtVoi4D7tA?si=zfOOndihhjwowYHe", "https://www.youtube.com/live/sWqgV1lj3so?si=ydRyeeocHArqfsdB"]}
         ]
+      },
+      "books": {
+        "label": "📚 Кітаптар",
+        "all_pages": {
+          "label": "📖 Информатика пәні бойынша кітап беттері",
+          "type": "single",
+          "file_id": "BQACAgIAAxkBAAJXn2pBScwT5Ov9-3bBlSGTL0SBAqQGAAJ0oQACrSoJSuy0eorTMQdfPAQ"
+        },
+        "class_7": {
+          "label": "7️⃣ 7-класс",
+          "almatykkitap": {"label": "Алматыкітап", "type": "list", "items": [{"label": "Информатика 7 сынып Алматыкітап", "file_id": "BQACAgIAAxkBAAJWbGpBEm9-6PMcraPsSsC8myeDNSt_AALRngACrSoJSs66vqsI-pdPPAQ"}]},
+          "atamura": {"label": "Атамұра", "type": "list", "items": [{"label": "Информатика 7 сынып Атамұра", "file_id": "BQACAgIAAxkBAAJWampBEm8sDRL9QcmL46TseRmdHsUHAALPngACrSoJSmMHWY0YqbRpPAQ"}]},
+          "arman": {"label": "Арман-ПВ", "type": "list", "items": [{"label": "Информатика 7 сынып Арман-ПВ", "file_id": "BQACAgIAAxkBAAJWa2pBEm-8hta2oY7A-TXwNdVfvgzuAALQngACrSoJSrR7o39YIU-8PAQ"}]}
+        },
+        "class_8": {
+          "label": "8️⃣ 8-класс",
+          "almatykkitap": {"label": "Алматыкітап", "type": "list", "items": [{"label": "Информатика 8 сынып Алматыкітап", "file_id": "BQACAgIAAxkBAAJWaWpBEm_zySHM_rkK5Uf0AAG0M9IJgAACzp4AAq0qCUrHZc5jnkT7-TwE"}]},
+          "atamura": {"label": "Атамұра", "type": "list", "items": [{"label": "Информатика 8 сынып Атамұра", "file_id": "BQACAgIAAxkBAAJWU2pBEl3fTXubRzmnNmEI14LEOh3SAALMngACrSoJSsF5U1wlRSCmPAQ"}]},
+          "arman": {"label": "Арман-ПВ", "type": "list", "items": [{"label": "Информатика 8 сынып Арман-ПВ", "file_id": "BQACAgIAAxkBAAJWaGpBEm_bII7i9XU88kEEhBBgaS3KAALNngACrSoJSiKUQIjuJIrIPAQ"}]}
+        },
+        "class_9": {
+          "label": "9️⃣ 9-класс",
+          "almatykkitap": {"label": "Алматыкітап", "type": "list", "items": [{"label": "Информатика 9 сынып Алматыкітап", "file_id": "BQACAgIAAxkBAAJWUmpBEl2uLgg1ryBsMaA92yGIv-cdAALLngACrSoJStLmhkIwgzt3PAQ"}]},
+          "atamura": {"label": "Атамұра", "type": "list", "items": [{"label": "Информатика 9 сынып Атамұра", "file_id": "BQACAgIAAxkBAAJWUGpBEl1xmui-F9JUxIFg5JjYThvxAALJngACrSoJSnAFAul2z9JAPAQ"}]},
+          "arman": {"label": "Арман-ПВ", "type": "list", "items": [{"label": "Информатика 9 сынып Арман-ПВ", "file_id": "BQACAgIAAxkBAAJWUWpBEl2j4-FAVHWrXB697932yTuCAALKngACrSoJSnKa667L6CP6PAQ"}]}
+        },
+        "class_10": {
+          "label": "🔟 10-класс",
+          "almatykkitap": {"label": "Алматыкітап", "type": "list", "items": [{"label": "Информатика 10 сынып Алматыкітап", "file_id": "BQACAgIAAxkBAAJWT2pBEl2neaqxAs9d8C7WTVdC_TNxAALIngACrSoJStgyo8uJaD-ePAQ"}]},
+          "atamura": {"label": "Атамұра", "type": "list", "items": [{"label": "Информатика 10 сынып Атамұра", "file_id": "BQACAgIAAxkBAAJWTWpBEl0yOgLwP7Im7xh9JG_am4K3AALFngACrSoJSpf2nYXKZvgOPAQ"}]},
+          "arman": {"label": "Арман-ПВ", "type": "list", "items": [{"label": "Информатика 10 сынып Арман-ПВ", "file_id": "BQACAgIAAxkBAAJWTmpBEl1bjHms8jskVKoPGhT1MjFpAALGngACrSoJSjwwoPsTc_H9PAQ"}]}
+        },
+        "class_11": {
+          "label": "1️⃣1️⃣ 11-класс",
+          "almatykkitap": {"label": "Алматыкітап", "type": "list", "items": [{"label": "Информатика 11 сынып Алматыкітап", "file_id": "BQACAgIAAxkBAAJWTGpBEl1Yc0iQ8VMEycuUJdkb-0r3AALEngACrSoJSnoLE4CQl8VSPAQ"}]},
+          "atamura": {"label": "Атамұра", "type": "list", "items": [{"label": "Информатика 11 сынып Атамұра", "file_id": "BQACAgIAAxkBAAJWSmрBEl117fl7u83Zx0pCcW8myWLSAALCngACrSoJSvIOpOW7RDOdPAQ"}]},
+          "arman": {"label": "Арман-ПВ", "type": "list", "items": [{"label": "Информатика 11 сынып Арман-ПВ", "file_id": "BQACAgIAAxkBAAJWS2pBEl3-EFSLs0x-g7TWqR_bExn_AALDngACrSoJSpbpBmUW5trrPAQ"}]}
+        }
       },
       "tasks": {
         "label": "📝 Тапсырмалар",
@@ -87,11 +105,6 @@
             {"label": "2️⃣ Информатика 2-нұсқа", "file_id": "BQACAgIAAxkBAAJIH2o3wPkzL3j8xGyREAl9T-PlAmMvAAIxnQACdm_BSf8JUMqsiG99PAQ"}
           ]
         }
-      },
-      "theory": {
-        "label": "📚 Теориялық базалар",
-        "type": "list",
-        "items": []
       },
       "checklists": {
         "label": "✅ Чек-листтер",
@@ -136,26 +149,27 @@
         "items": []
       },
       "specs": {
-        "label": "📄 Спецификациялар",
-        "type": "single"
+        "label": "📄 Спецификация",
+        "type": "list",
+        "items": []
       }
     }
   },
   "proforientation": {
     "label": "Саған қажетті заттар😉",
     "professions": {
-      "label": "🎯 Мамандықтар тізімі",
+      "label": "Мамандықтар",
       "type": "list",
       "items": [
-        {"label": "Математика + Физика", "file_id": "BQACAgIAAxkBAAMTaivspfgwUqgcE-nCk37sZ0gO4SYAAiuXAAKtAmBJpnCkhOKSZtA8BA"},
-        {"label": "Математика + Информатика", "file_id": "BQACAgIAAxkBAAMSaivspeEzhdsdLQYzJQ6s3wwrmqIAAiqXAAKtAmBJ07JWBgNAsME8BA"},
-        {"label": "Математика + География", "file_id": "BQACAgIAAxkBAAMRaivspUaFPGPg8CVR9G5T5oA197AAAimXAAKtAmBJLZ08FZYxLtQ8BA"}
+        {"label": "Математика+Физика", "file_id": "BQACAgIAAxkBAAJIrWo3xvn0oCZPEFrRo0_8Z5_LyshJAAKhnwAC6-DASb9m-RZQTe1IPAQ"},
+        {"label": "Математика+Информатика", "file_id": "BQACAgIAAxkBAAJIrmWo3xyJA2AjCWccnqJL9GPSYSJZAAK"},
+        {"label": "Математика+География", "file_id": "BQACAgIAAxkBAAJIr2Wo3x5PxW4KRrcK1PX1sM6tZJZHAAKinnwAC6-DASYKVw3"}
       ]
     },
     "guides": {
-      "label": "📘 Гайдтар",
+      "label": "Гайдтар",
       "type": "single",
-      "file_id": "BQACAgIAAxkBAAMPaivpCPcatwABXyOQ-45I4jWOoCyLAAL5lgACrQJgSd6V6xmqLzCxPAQ"
+      "file_id": "BQACAgIAAxkBAAJIr-Wo3x7K5EBb5vN8Gq2S5SJQAAK"
     }
   }
 }
