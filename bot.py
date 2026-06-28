@@ -136,6 +136,12 @@ async def render_node(message: Message, state: FSMContext, path: list):
             await message.answer("⏳ Материал жақында қосылады!")
         return
 
+    if node_type == "links":
+        title = node.get("title", node_label)
+        links = node.get("links", [])
+        await send_links(message, title, links)
+        return
+
     if node_type == "list":
         await state.update_data(path=path)
         await state.set_state(NavStates.browsing)
