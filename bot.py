@@ -176,6 +176,7 @@ def parent_path(path: list) -> list:
         return []
     return path[:-1]
 
+# ===== QUICK UPLOAD HANDLERS =====
 @dp.message(F.text == "📄 Быстрая загрузка PDF")
 async def quick_upload_start(message: Message, state: FSMContext):
     if message.from_user.id != ADMIN_ID:
@@ -196,11 +197,6 @@ async def quick_upload_pdf(message: Message, state: FSMContext):
         await state.clear()
         return
     
-    file_id = message.document.file_id
-    filename = message.document.file_name or "file"
-    
-    await message.answer(f"✅ FILE_ID\n\n📄 {filename}\n\n{file_id}")
-    await message.answer("📄 Еще PDF или /done")
     file_id = message.document.file_id
     filename = message.document.file_name or "file"
     
@@ -714,6 +710,23 @@ async def navigate_tree(message: Message, state: FSMContext):
         child_label = child.get("label", key)
         if clicked == child_label:
             track(message.from_user.id, message.from_user.first_name or "Қолданушы", child_label)
+            
+            # 🔥 ИСПРАВЛЕНИЕ: Если это класс (class_7, class_8, и т.д.) - отправить все PDF сразу!
+            if key.startswith("class_"):
+                node = mat.get_node(full_data, current_path + [key])
+                if node:
+                    await message.answer(f"📚 {child_label} - барлық оқулықтар:")
+                    # Отправляем PDF каждого автора
+                    for author_key, author_node in node.items():
+                        if author_key != "label" and isinstance(author_node, dict):
+                            items = author_node.get("items", [])
+                            for item in items:
+                                file_id = item.get("file_id")
+                                if file_id:
+                                    await send_material(message, file_id)
+                    return
+            
+            # Если это не класс - открываем обычно
             await render_node(message, state, current_path + [key])
             return
 
